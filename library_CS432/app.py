@@ -41,14 +41,14 @@ def register():
 
         cur = mysql.connection.cursor()
         cur.execute(
-            'SELECT * FROM users WHERE username = %s', (username,)
+            'SELECT * FROM user WHERE username = %s', (username,)
         )
         user = cur.fetchone()
         if user:
             error = 'Account already exists !'
 
         if error is None:
-            cur.execute('INSERT INTO users (username, password) VALUES (%s, %s)', (username, password,))
+            cur.execute('INSERT INTO user (username, password) VALUES (%s, %s)', (username, password,))
             mysql.connection.commit()
 
         flash(error)
@@ -63,7 +63,7 @@ def login():
         error = None
         cur = mysql.connection.cursor()
         cur.execute(
-            'SELECT * FROM users WHERE username = %s AND password = %s', (username, password)
+            'SELECT * FROM user WHERE username = %s AND password = %s', (username, password)
         )
         users = cur.fetchone()
         if users is None:

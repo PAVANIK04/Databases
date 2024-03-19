@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, request, redirect, url_for, session, flash
+from flask import render_template, request, redirect, url_for, session, flash, jsonify
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_mysqldb import MySQL
@@ -86,6 +86,16 @@ def home(username):
     if 'username' in session and session['username'] == username:
         return render_template('home.html', username=username)
     return redirect(url_for('login'))
+
+@app.route('/catalogue/search', methods=['POST'])
+def search_catalogue():
+    search_query = request.form['search_query']
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT title, author_id, catalogue_type, count FROM catalogue WHERE title LIKE %s", ('%' + search_query + '%',))
+    results = cur.fetchall()
+    cur.close()
+    catalogue_list = [{'title': result[0], 'catalogue_type': result[2]} for result in results]
+    return jsonify(catalogue_list)
 
 
 if __name__ == '__main__':

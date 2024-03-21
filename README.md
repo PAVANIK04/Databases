@@ -17,7 +17,8 @@ run the following commands in your venv:
 #### The table 'users' has been used
 
 ### To generate SECRET_KEY:
-import secrets
+    
+    import secrets
 
-secret_key = secrets.token_hex(16)
-print("Generated Secret Key:", secret_key)
+    secret_key = secrets.token_hex(16)
+    print("Generated Secret Key:", secret_key)

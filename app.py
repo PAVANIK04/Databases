@@ -132,10 +132,10 @@ def admin_login():
         password = request.form['password']
         error = None
         cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM user WHERE username = %s AND password = %s', (username, password))
+        cur.execute('SELECT * FROM user WHERE username = %s AND password = %s AND member_type = %s', (username, password, 'Admin'))
         user = cur.fetchone()
         cur.close()
-        if user and username == 'admin':
+        if user:
             session['username'] = username
             session['is_admin'] = True
             return redirect(url_for('admin'))
@@ -143,6 +143,7 @@ def admin_login():
             error = 'Incorrect username or password.'
             flash(error)
     return render_template('admin_login.html')
+
 
 @app.route('/admin/logout')
 def admin_logout():

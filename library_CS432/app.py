@@ -147,12 +147,9 @@ def faculty_recommend(username):
                 )
                 mysql.connection.commit()
                 cur.close()
-                return redirect(url_for('faculty', username=username))
+                return jsonify({'success': True, 'message': ' Created successfully'})
             except Exception as e:
-                error = "Error occurred while adding book: " + str(e)
-                return jsonify({'error': error}), 500  # Return error as JSON with status code 500
-        return render_template('faculty_recommend.html', username=username)
-    abort(403)  # forbidden
+                   return jsonify({'success': False, 'message': str(e)}), 500
 
 
 def catalogue_ref(title):
@@ -299,19 +296,27 @@ def add_catalogue():
         return jsonify({'success': False, 'message': str(e)}), 500
     
 # To Delete a catalogue
+
 @app.route('/delete_catalogue/<int:catalogue_id>', methods=['DELETE'])
 def delete_catalogue(catalogue_id):
     try:
-        # Delete the catalogue from the database
         cur = mysql.connection.cursor()
-        cur.execute("DELETE FROM catalogue WHERE catalogue_id = %s", (catalogue_id,))
+
+        # Delete from recommendation table first
+        cur.execute("DELETE FROM recommendation WHERE catalogue_id = %s", (catalogue_id,))
+        # Commit the deletion
         mysql.connection.commit()
+
+        # Now delete from the catalogue table
+        cur.execute("DELETE FROM catalogue WHERE catalogue_id = %s", (catalogue_id,))
+        # Commit the deletion
+        mysql.connection.commit()
+
         cur.close()
-        
+
         return jsonify({'success': True, 'message': f'Catalogue with ID {catalogue_id} deleted successfully'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
-    
 
 # Route to add members
 @app.route('/add_member', methods=['POST'])
@@ -349,6 +354,33 @@ def add_member():
         return jsonify({'success': True, 'message': 'Member added successfully'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/recommended', methods=['GET'])
+def get_recomend():
+    username = session.get('username')
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT user_ID FROM user WHERE username = %s", (username,))
+    user_id_row = cur.fetchone()
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * from recommendation where user_ID = %s", (user_id_row,))
+        results = cur.fetchall()
+        cur.close()
+
+        courses = []
+        for row in results:
+            recommened = {
+                'user_ID': row[0],
+                'catalogue_id': row[1],
+                'course_id': row[2],
+               
+            }
+            courses.append(recommened)
+
+        return jsonify(courses)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     
 
 if __name__ == '__main__':

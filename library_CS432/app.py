@@ -22,7 +22,7 @@ mysql = MySQL(app)
 @app.route('/')
 def index():
     if 'username' in session and 'role' in session:
-        return redirect(url_for(session['role'], username=session['username']))
+        return redirect(url_for(session['role'].lower(), username=session['username']))
     return redirect(url_for('login'))
 
 
@@ -100,13 +100,13 @@ def admin(username):
         return render_template('admin/index.html', username=username)
     return redirect(url_for('login'))
 
+
 @app.route('/admin/<username>/external')
 def ext_lib(username):
     if 'username' in session and session['username'] == username and session['role'] == 'Admin':
         library_data = get_library_data()
         return render_template('admin/external_library.html', username=username)
     return redirect(url_for('login'))
-
 
 
 # Dhruv Sharma
@@ -149,7 +149,7 @@ def faculty_recommend(username):
                 cur.close()
                 return jsonify({'success': True, 'message': ' Created successfully'})
             except Exception as e:
-                   return jsonify({'success': False, 'message': str(e)}), 500
+                return jsonify({'success': False, 'message': str(e)}), 500
 
 
 def catalogue_ref(title):
@@ -179,13 +179,15 @@ def rooms(username):
         return render_template('room_book.html')
     abort(403)  # forbidden
 
+
 # Anmol Kumar
 # Code to get all catalouge data
 @app.route('/catalogues', methods=['GET'])
 def get_catalogues():
     try:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT c.catalogue_id, c.category_no, c.cost, c.title, c.catalogue_type, a.name AS author_name, p.name AS publisher_name, c.purchase_date, c.subscription_end, c.count FROM catalogue c JOIN author a ON c.author_id = a.author_id JOIN publisher p ON c.publisher_id = p.publisher_id ORDER BY c.catalogue_id DESC")
+        cur.execute(
+            "SELECT c.catalogue_id, c.category_no, c.cost, c.title, c.catalogue_type, a.name AS author_name, p.name AS publisher_name, c.purchase_date, c.subscription_end, c.count FROM catalogue c JOIN author a ON c.author_id = a.author_id JOIN publisher p ON c.publisher_id = p.publisher_id ORDER BY c.catalogue_id DESC")
         results = cur.fetchall()
         cur.close()
 
@@ -209,7 +211,8 @@ def get_catalogues():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
+
 @app.route('/catalogue/search', methods=['POST'])
 def search_catalogue():
     search_query = request.form['search_query']
@@ -223,6 +226,7 @@ def search_catalogue():
     catalogue_list = [{'title': result[0], 'catalogue_type': result[2]} for result in results]
     return jsonify(catalogue_list)
 
+
 # Route to create a category
 @app.route('/add_category', methods=['POST'])
 def create_category():
@@ -231,7 +235,7 @@ def create_category():
         category_name = request.form['category_name']
         column_no = request.form['column_no']
         status = request.form['status']
-        
+
         cur = mysql.connection.cursor()
         cur.execute("""
             INSERT INTO shelf (category_no, category_name, column_no, status)
@@ -239,7 +243,7 @@ def create_category():
         """, (category_no, category_name, column_no, status))
         mysql.connection.commit()
         cur.close()
-        
+
         return jsonify({'success': True, 'message': 'Category created successfully'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
@@ -286,15 +290,18 @@ def add_catalogue():
             print("Publisher already exists")
 
         # Now inserting in catalogue
-        cur.execute("INSERT INTO catalogue (title, author_id, publisher_id,category_no, cost, catalogue_type, purchase_date, subscription_end, count ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                    (title, author_id, publisher_id, category_no, cost, catalogue_type, purchase_date, subscription_end, count,))
+        cur.execute(
+            "INSERT INTO catalogue (title, author_id, publisher_id,category_no, cost, catalogue_type, purchase_date, subscription_end, count ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (
+            title, author_id, publisher_id, category_no, cost, catalogue_type, purchase_date, subscription_end, count,))
         mysql.connection.commit()
         print("Catalogue inserted")
         cur.close()
         return jsonify({'success': True, 'message': 'Catalogue added successfully'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
-    
+
+
 # To Delete a catalogue
 
 @app.route('/delete_catalogue/<int:catalogue_id>', methods=['DELETE'])
@@ -318,6 +325,7 @@ def delete_catalogue(catalogue_id):
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
+
 # Route to add members
 @app.route('/add_member', methods=['POST'])
 def add_member():
@@ -334,13 +342,14 @@ def add_member():
     user_img = request.form['user_img']
     try:
         app.logger.info(request.form)
-     
+
         cur = mysql.connection.cursor()
         cur.execute("""
             INSERT INTO user (first_name, last_name, phone, username, password, dues, department, member_type, subscription_fees, user_img)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (first_name, last_name, phone, username, password, dues, department, member_type, subscription_fees, user_img))
-        user_id = cur.lastrowid 
+        """, (
+        first_name, last_name, phone, username, password, dues, department, member_type, subscription_fees, user_img))
+        user_id = cur.lastrowid
 
         # Insert email into the user_mail table
         cur.execute("""
@@ -354,6 +363,7 @@ def add_member():
         return jsonify({'success': True, 'message': 'Member added successfully'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
+
 
 @app.route('/recommended', methods=['GET'])
 def get_recomend():
@@ -373,7 +383,7 @@ def get_recomend():
                 'user_ID': row[0],
                 'catalogue_id': row[1],
                 'course_id': row[2],
-               
+
             }
             courses.append(recommened)
 
@@ -381,7 +391,7 @@ def get_recomend():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
 
 if __name__ == '__main__':
     app.run(debug=True)

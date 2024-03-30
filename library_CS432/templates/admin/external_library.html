@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Management System</title>
+    <title>Manage External Library</title>
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -52,7 +52,7 @@
                         <a class="nav-link" href="#">LMS Project</a>
                     </li>
                     <li>
-                        <a class="nav-link" href="/admin/{{session.username}}/external">Manage External Library</a>
+                        <a class="nav-link" href="#">Manage External Library</a>
                     </li>
 
                 </ul>
@@ -92,16 +92,12 @@
             <div class="col-md-12">
                 <button type="button" class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init
                     data-mdb-target="#add_cat">
-                    Add Catalogue
+                    Add an External Library
                 </button>
-                <button type="button" class="btn btn-success" data-mdb-ripple-init data-mdb-modal-init
+                <!-- <button type="button" class="btn btn-success" data-mdb-ripple-init data-mdb-modal-init
                     data-mdb-target="#add_mem">
                     Add Member
-                </button>
-                <button type="button" class="btn btn-info" data-mdb-ripple-init data-mdb-modal-init
-                    data-mdb-target="#addCategoryModal">
-                    Add Category
-                </button>
+                </button> -->
 
             </div>
 
@@ -117,9 +113,9 @@
             <br><br><br>
             <div class="card">
                 <div class="card-header text-black">
-                    Catalogue List
+                    List of External Libraries
                 </div>
-                <div id="catalogueList" class="card-body">
+                <div id="libList" class="card-body">
                 </div>
             </div>
         </div>
@@ -130,12 +126,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="add_cat_label">Add New Catalogue</h5>
+                    <h5 class="modal-title" id="add_cat_label">Add New Library</h5>
                     <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addCatalogueForm">
+                    <form id="addLibraryForm">
                         <div class="mb-3">
                             <label for="title" class="form-label">Title</label>
                             <input type="text" class="form-control" id="title" name="title" required>
@@ -232,16 +228,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="memberType" class="form-label">Member Type</label>
-                            <select class="form-select" id="memberType" name="member_type" required>
-                                <option value="" selected disabled>Select Member Type</option>
-                                <option value="Admin">Admin</option>
-                                <option value="Student">Student</option>
-                                <option value="Staff">Staff</option>
-                                <option value="Faculty">Faculty</option>
-                                <option value="InterLibrary">InterLibrary</option>
-                            </select>
+                            <input type="text" class="form-control" id="memberType" name="member_type" required>
                         </div>
-
                         <div class="mb-3">
                             <label for="subscriptionFees" class="form-label">Subscription Fees</label>
                             <input type="text" class="form-control" id="subscriptionFees" name="subscription_fees"
@@ -252,176 +240,122 @@
                             <input type="text" class="form-control" id="userImg" name="user_img">
                         </div>
                         <button type="submit" class="btn btn-primary">Add</button>
-                    </form>
 
                 </div>
 
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addCategoryForm">
-                        <div class="mb-3">
-                            <label for="category_no" class="form-label">Category Number</label>
-                            <input type="text" class="form-control" id="category_no" name="category_no" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="categoryName" class="form-label">Category Name</label>
-                            <input type="text" class="form-control" id="categoryName" name="category_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="columnNo" class="form-label">Column Number</label>
-                            <input type="text" class="form-control" id="columnNo" name="column_no" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <input type="text" class="form-control" id="status" name="status" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
     <script>
-        $(document).ready(function () {
-            $.get('/catalogues', function (data) {
-                $('#catalogueList').empty();
+        // $(document).ready(function () {
+        //     $.get('/catalogues', function (data) {
+        //         $('#libList').empty();
 
-                // Create table
-                var table = $('<table class="table"></table>');
+        //         // Create table
+        //         var table = $('<table class="table"></table>');
 
-                // Create table header
-                var tableHeader = $('<thead class="thead-dark"></thead>');
-                var headerRow = $('<tr></tr>');
-                headerRow.append('<th>Title</th>');
-                headerRow.append('<th>Catalogue ID</th>');
-                headerRow.append('<th>Category No</th>');
+        //         // Create table header
+        //         var tableHeader = $('<thead class="thead-dark"></thead>');
+        //         var headerRow = $('<tr></tr>');
+        //         headerRow.append('<th>Title</th>');
+        //         headerRow.append('<th>Catalogue ID</th>');
+        //         headerRow.append('<th>Category No</th>');
 
-                headerRow.append('<th>Type</th>');
-                headerRow.append('<th>Author</th>');
-                headerRow.append('<th>Publisher</th>');
+        //         headerRow.append('<th>Type</th>');
+        //         headerRow.append('<th>Author</th>');
+        //         headerRow.append('<th>Publisher</th>');
 
-                headerRow.append('<th>Count</th>');
-                headerRow.append('<th>Actions</th>'); // New column for Actions
-                tableHeader.append(headerRow);
-                table.append(tableHeader);
+        //         headerRow.append('<th>Count</th>');
+        //         headerRow.append('<th>Actions</th>'); // New column for Actions
+        //         tableHeader.append(headerRow);
+        //         table.append(tableHeader);
 
-                // Create table body
-                var tableBody = $('<tbody></tbody>');
-                data.forEach(function (catalogue) {
-                    var row = $('<tr></tr>');
-                    row.append('<td>' + catalogue.title + '</td>');
-                    row.append('<td>' + catalogue.catalogue_id + '</td>');
-                    row.append('<td>' + catalogue.category_no + '</td>');
+        //         // Create table body
+        //         var tableBody = $('<tbody></tbody>');
+        //         data.forEach(function (catalogue) {
+        //             var row = $('<tr></tr>');
+        //             row.append('<td>' + catalogue.title + '</td>');
+        //             row.append('<td>' + catalogue.catalogue_id + '</td>');
+        //             row.append('<td>' + catalogue.category_no + '</td>');
 
-                    row.append('<td>' + catalogue.catalogue_type + '</td>');
-                    row.append('<td>' + catalogue.author_name + '</td>');
-                    row.append('<td>' + catalogue.publisher_name + '</td>');
+        //             row.append('<td>' + catalogue.catalogue_type + '</td>');
+        //             row.append('<td>' + catalogue.author_name + '</td>');
+        //             row.append('<td>' + catalogue.publisher_name + '</td>');
 
-                    row.append('<td>' + catalogue.count + '</td>');
+        //             row.append('<td>' + catalogue.count + '</td>');
 
-                    // Actions 
-                    var actions = '<td>' +
-                        '<button class="btn btn-primary btn-sm" onclick="updateCatalogue(' + catalogue.catalogue_id + ')">Update</button>' +
-                        '<button class="btn btn-danger btn-sm" onclick="deleteCatalogue(' + catalogue.catalogue_id + ')">Delete</button>' +
-                        '</td>';
-                    row.append(actions);
+        //             // Actions 
+        //             var actions = '<td>' +
+        //                 '<button class="btn btn-primary btn-sm" onclick="updateCatalogue(' + catalogue.catalogue_id + ')">Update</button>' +
+        //                 '<button class="btn btn-danger btn-sm" onclick="deleteCatalogue(' + catalogue.catalogue_id + ')">Delete</button>' +
+        //                 '</td>';
+        //             row.append(actions);
 
-                    tableBody.append(row);
-                });
-                table.append(tableBody);
-                $('#catalogueList').append(table);
-            });
-        });
+        //             tableBody.append(row);
+        //         });
+        //         table.append(tableBody);
+        //         $('#libList').append(table);
+        //     });
+        // });
 
-        function updateCatalogue(catalogueId) {
-            //TODO:
-            console.log('Update catalogue with ID:', catalogueId);
-        }
+        // function updateCatalogue(catalogueId) {
+        //     //TODO:
+        //     console.log('Update catalogue with ID:', catalogueId);
+        // }
 
-        function deleteCatalogue(catalogueId) {
+        // function deleteCatalogue(catalogueId) {
 
-            console.log('Delete catalogue with ID:', catalogueId);
-            $.ajax({
-                url: '/delete_catalogue/' + catalogueId,
-                type: 'DELETE',
-                data: { catalogue_id: catalogueId },
-                success: function (response) {
-                    console.log('Catalogue deleted successfully!');
-                    window.location.reload();
-                },
-                error: function (xhr, status, error) {
-                    console.log('Error deleting catalogue:', error);
-                }
-            });
-        }
+        //     console.log('Delete catalogue with ID:', catalogueId);
+        //     $.ajax({
+        //         url: '/delete_catalogue/' + catalogueId,
+        //         type: 'DELETE',
+        //         data: { catalogue_id: catalogueId },
+        //         success: function (response) {
+        //             console.log('Catalogue deleted successfully!');
+        //             // window.location.reload();
+        //         },
+        //         error: function (xhr, status, error) {
+        //             console.log('Error deleting catalogue:', error);
+        //         }
+        //     });
+        // }
 
-        $('#addCatalogueForm').submit(function (event) {
-            event.preventDefault();
-            var formData = $(this).serialize();
+        // $('#addLibraryForm').submit(function (event) {
+        //     event.preventDefault();
+        //     var formData = $(this).serialize();
 
-            $.post('/add_catalogue', formData, function (response) {
-                $('#addCatalogueModal').modal('close');
-                window.location.reload();
-                if (response.success) {
-                    alert('Catalogue added successfully!');
-                } else {
-                    alert('Error: ' + response.message);
-                }
-            }).fail(function (xhr, status, error) {
-                alert('AJAX Failed: ' + error);
-            });
+        //     $.post('/add_catalogue', formData, function (response) {
+        //         $('#addCatalogueModal').modal('close');
+        //         window.location.reload();
+        //         if (response.success) {
+        //             alert('Catalogue added successfully!');
+        //         } else {
+        //             alert('Error: ' + response.message);
+        //         }
+        //     }).fail(function (xhr, status, error) {
+        //         alert('AJAX Failed: ' + error);
+        //     });
 
-        });
+        // });
 
-        $('#addMemberForm').submit(function (event) {
-            event.preventDefault();
-            var formData = $(this).serialize();
+        // $('#addMemberForm').submit(function (event) {
+        //     event.preventDefault();
+        //     var formData = $(this).serialize();
 
-            $.post('/add_member', formData, function (response) {
-                $('#addMemberModal').modal('close');
-                window.location.reload();
-                if (response.success) {
-                    alert('Member added successfully!');
-                } else {
-                    alert('Error: ' + response.message);
-                }
-            }).fail(function (xhr, status, error) {
-                alert('AJAX request failed: ' + error);
-            });
+        //     $.post('/add_member', formData, function (response) {
+        //         $('#addMemberModal').modal('close');
+        //         window.location.reload();
+        //         if (response.success) {
+        //             alert('Member added successfully!');
+        //         } else {
+        //             alert('Error: ' + response.message);
+        //         }
+        //     }).fail(function (xhr, status, error) {
+        //         alert('AJAX request failed: ' + error);
+        //     });
 
-        });
-
-        $('#addCategoryForm').submit(function (event) {
-            event.preventDefault();
-            var formData = $(this).serialize();
-
-            $.post('/add_category', formData, function (response) {
-                $('#addCategoryModal').modal('close');
-                window.location.reload();
-                if (response.success) {
-                    alert('Member added successfully!');
-                } else {
-                    alert('Error: ' + response.message);
-                }
-            }).fail(function (xhr, status, error) {
-                alert('AJAX request failed: ' + error);
-            });
-
-        });
-
+        // });
     </script>
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>

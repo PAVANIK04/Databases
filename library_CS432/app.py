@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import render_template, request, redirect, url_for, session, abort, jsonify
+import time
 
 from flask_mysqldb import MySQL
 
@@ -98,7 +99,14 @@ def admin(username):
         library_data = get_library_data()
         return render_template('admin/index.html', username=username)
     return redirect(url_for('login'))
-#
+
+@app.route('/admin/<username>/external')
+def ext_lib(username):
+    if 'username' in session and session['username'] == username and session['role'] == 'Admin':
+        library_data = get_library_data()
+        return render_template('admin/external_library.html', username=username)
+    return redirect(url_for('login'))
+
 
 
 # Dhruv Sharma
@@ -175,6 +183,36 @@ def rooms(username):
     abort(403)  # forbidden
 
 # Anmol Kumar
+# Code to get all catalouge data
+@app.route('/catalogues', methods=['GET'])
+def get_catalogues():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT c.catalogue_id, c.category_no, c.cost, c.title, c.catalogue_type, a.name AS author_name, p.name AS publisher_name, c.purchase_date, c.subscription_end, c.count FROM catalogue c JOIN author a ON c.author_id = a.author_id JOIN publisher p ON c.publisher_id = p.publisher_id ORDER BY c.catalogue_id DESC")
+        results = cur.fetchall()
+        cur.close()
+
+        catalogue_list = []
+        for row in results:
+            catalogue = {
+                'catalogue_id': row[0],
+                'category_no': row[1],
+                'cost': row[2],
+                'title': row[3],
+                'catalogue_type': row[4],
+                'author_name': row[5],
+                'publisher_name': row[6],
+                'purchase_date': row[7],
+                'subscription_end': row[8],
+                'count': row[9]
+            }
+            catalogue_list.append(catalogue)
+
+        return jsonify(catalogue_list)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 @app.route('/catalogue/search', methods=['POST'])
 def search_catalogue():
     search_query = request.form['search_query']
@@ -188,6 +226,130 @@ def search_catalogue():
     catalogue_list = [{'title': result[0], 'catalogue_type': result[2]} for result in results]
     return jsonify(catalogue_list)
 
+# Route to create a category
+@app.route('/add_category', methods=['POST'])
+def create_category():
+    try:
+        category_no = request.form['category_no']
+        category_name = request.form['category_name']
+        column_no = request.form['column_no']
+        status = request.form['status']
+        
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO shelf (category_no, category_name, column_no, status)
+            VALUES (%s, %s, %s, %s)
+        """, (category_no, category_name, column_no, status))
+        mysql.connection.commit()
+        cur.close()
+        
+        return jsonify({'success': True, 'message': 'Category created successfully'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/add_catalogue', methods=['POST'])
+def add_catalogue():
+    title = request.form['title']
+    author_name = request.form['authorName']
+    publisher_name = request.form['publisherName']
+    category_no = request.form['categoryNo']
+    cost = request.form['cost']
+    catalogue_type = request.form['catalogueType']
+    purchase_date = request.form['purchaseDate']
+    subscription_end = request.form['subscriptionEnd']
+    count = request.form['count']
+
+    try:
+        # Insert author first
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT author_id FROM author WHERE name = %s", (author_name,))
+        author_id = cur.fetchone()
+        if author_id is None:
+            cur.execute("INSERT INTO author (name) VALUES (%s)", (author_name,))
+            print("Author inserted")
+            mysql.connection.commit()
+            author_id = cur.lastrowid
+            print("Author id fetched")
+        else:
+            author_id = author_id[0]
+            print("Author already exists")
+
+        # Insert publisher second
+        cur.execute("SELECT publisher_id FROM publisher WHERE name = %s", (publisher_name,))
+        publisher_id = cur.fetchone()
+        if publisher_id is None:
+            cur.execute("INSERT INTO publisher (name) VALUES (%s)", (publisher_name,))
+            mysql.connection.commit()
+            print("Publisher inserted")
+            publisher_id = cur.lastrowid
+            print("Publisher id fetched")
+        else:
+            publisher_id = publisher_id[0]
+            print("Publisher already exists")
+
+        # Now inserting in catalogue
+        cur.execute("INSERT INTO catalogue (title, author_id, publisher_id,category_no, cost, catalogue_type, purchase_date, subscription_end, count ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (title, author_id, publisher_id, category_no, cost, catalogue_type, purchase_date, subscription_end, count,))
+        mysql.connection.commit()
+        print("Catalogue inserted")
+        cur.close()
+        return jsonify({'success': True, 'message': 'Catalogue added successfully'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    
+# To Delete a catalogue
+@app.route('/delete_catalogue/<int:catalogue_id>', methods=['DELETE'])
+def delete_catalogue(catalogue_id):
+    try:
+        # Delete the catalogue from the database
+        cur = mysql.connection.cursor()
+        cur.execute("DELETE FROM catalogue WHERE catalogue_id = %s", (catalogue_id,))
+        mysql.connection.commit()
+        cur.close()
+        
+        return jsonify({'success': True, 'message': f'Catalogue with ID {catalogue_id} deleted successfully'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    
+
+# Route to add members
+@app.route('/add_member', methods=['POST'])
+def add_member():
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    phone = request.form['phone']
+    email = request.form['email']
+    username = request.form['username']
+    password = request.form['password']
+    dues = request.form['dues']
+    department = request.form['department']
+    member_type = request.form['member_type']
+    subscription_fees = request.form['subscription_fees']
+    user_img = request.form['user_img']
+    try:
+        app.logger.info(request.form)
+     
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO user (first_name, last_name, phone, username, password, dues, department, member_type, subscription_fees, user_img)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (first_name, last_name, phone, username, password, dues, department, member_type, subscription_fees, user_img))
+        user_id = cur.lastrowid 
+
+        # Insert email into the user_mail table
+        cur.execute("""
+            INSERT INTO user_mail (user_ID, email)
+            VALUES (%s, %s)
+        """, (user_id, email))
+
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({'success': True, 'message': 'Member added successfully'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    
 
 if __name__ == '__main__':
     app.run(debug=True)

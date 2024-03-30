@@ -96,7 +96,7 @@ def home(username):
 def admin(username):
     if 'username' in session and session['username'] == username and session['role'] == 'Admin':
         library_data = get_library_data()
-        return render_template('admin.html', username=username)
+        return render_template('admin/index.html', username=username)
     return redirect(url_for('login'))
 #
 
@@ -104,7 +104,7 @@ def admin(username):
 # Dhruv Sharma
 def get_library_data():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT library_id, exchanges, transaction FROM external_library")
+    cur.execute("SELECT library_id, exchanges, amount FROM external_library")
     library_data = cur.fetchall()
     cur.close()
     return library_data
@@ -173,8 +173,6 @@ def rooms(username):
             return jsonify()
         return render_template('room_book.html')
     abort(403)  # forbidden
-#
-
 
 # Anmol Kumar
 @app.route('/catalogue/search', methods=['POST'])

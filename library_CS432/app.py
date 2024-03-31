@@ -215,6 +215,7 @@ def get_catalogues():
         return jsonify({'error': str(e)}), 500
 
 #get by id catalogue data
+
 @app.route('/catalogues/<int:catalogue_id>', methods=['GET'])
 def get_catalogue_by_id(catalogue_id):
     try:

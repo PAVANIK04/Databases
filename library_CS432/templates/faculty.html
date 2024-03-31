@@ -51,9 +51,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">LMS Project</a>
                     </li>
-                    <li>
-                        <a class="nav-link" href="/admin/{{session.username}}/external">Manage External Library</a>
-                    </li>
+
 
                 </ul>
                 </li>
@@ -86,13 +84,13 @@
         </div>
     </nav>
     <div class="container mt-4">
-      <div class="row">
-          <div class="col-md-12">
-              <button type="button" class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init
-                  data-mdb-target="#add_rec">
-                  Add Recommendation
-              </button>
-              <!-- <button type="button" class="btn btn-success" data-mdb-ripple-init data-mdb-modal-init
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init
+                    data-mdb-target="#add_rec">
+                    Add Recommendation
+                </button>
+                <!-- <button type="button" class="btn btn-success" data-mdb-ripple-init data-mdb-modal-init
                   data-mdb-target="#add_mem">
                   Add Member
               </button>
@@ -101,9 +99,9 @@
                   Add Category
               </button> -->
 
-          </div>
+            </div>
 
-          <!-- <div class="jumbotron">
+            <!-- <div class="jumbotron">
                   <h1 class="display-4 text-white">Welcome, Admin</h1>
                   <p class="lead text-white">Manage the library catalogues and members here.</p>
                   <hr class="my-4">
@@ -112,57 +110,58 @@
                   <button type="button" class="btn btn-success" data-mdb-toggle="modal"
                       data-mdb-target="#addMemberModal">Add Member</button>
               </div> -->
-          <br><br><br>
-          <div class="card">
-              <div class="card-header text-black">
-                  Your Recommend List
-              </div>
-              <div id="recommendList" class="card-body">
-              </div>
-          </div>
-      </div>
-  </div>
-
-  <div class="modal fade" id="add_rec" tabindex="-1" aria-labelledby="add_rec" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="add_rec_label">Add New Catalogue</h5>
-                <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal"
-                    aria-label="Close"></button>
+            <br><br><br>
+            <div class="card">
+                <div class="card-header text-black">
+                    Your Recommend List
+                </div>
+                <div id="recommendList" class="card-body">
+                </div>
             </div>
-            <div class="modal-body">
-                <form id="addrecomendForm">
-                    <div class="mb-3">
-                        <label for="title" class="form-label">user_ID</label>
-                        <input type="text" class="form-control" id="user_id" name="user_id" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="course" class="form-label">Course ID</label>
-                        <input type="text" class="form-control" id="course" name="course" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="title" class="form-label">title</label>
-                        <input type="text" class="form-control" id="title" name="title" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="catalogue" class="form-label">catalogue</label>
-                        <input type="text" class="form-control" id="catalogue" name="catalogue">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Add</button>
-                </form>
-            </div>
-
         </div>
     </div>
-</div>
+
+    <div class="modal fade" id="add_rec" tabindex="-1" aria-labelledby="add_rec" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="add_rec_label">Add New Catalogue</h5>
+                    <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addrecomendForm">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">user_ID</label>
+                            <input type="text" class="form-control" id="user_id" name="user_id" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="course" class="form-label">Course ID</label>
+                            <input type="text" class="form-control" id="course" name="course" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="title" class="form-label">title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="catalogue" class="form-label">catalogue</label>
+                            <input type="text" class="form-control" id="catalogue" name="catalogue">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>
 
-<script>
-    $(document).ready(function () {
+    <script>
+        $(document).ready(function () {
             $.get('/recommended', function (data) {
                 $('#recommendList').empty();
 
@@ -219,7 +218,8 @@
 
         });
 
-</script>
+    </script>
 </body>
+
 </html>
 '

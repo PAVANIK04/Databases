@@ -26,7 +26,6 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <a class="navbar-brand mt-2 mt-lg-0" href="#">
-                    <img src="" height="15" alt="MDB Logo" loading="lazy" />
                 </a>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
@@ -37,6 +36,13 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">LMS Project</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/home/{{session.username}}/issue">Issue an
+                            Item</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/{{session.username}}/rooms">Check Rooms</a>
                     </li>
                 </ul>
             </div>
@@ -85,7 +91,7 @@
         </div>
     </nav>
 
-    <div class="container-xl p-5">
+    <div class="container-xl p-5 mt-5 search-home">
 
 
         <div class="input-group">
@@ -106,11 +112,46 @@
         </div>
 
         <div id="search_results">
-          
+
         </div>
 
 
     </div>
+
+    <div class="container mt-3">
+        Your Summary
+
+        <!-- Tabs navs -->
+        <ul class="nav nav-tabs mb-3" id="ex-with-icons" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a data-mdb-tab-init class="nav-link active" id="ex-with-icons-tab-1" href="#ex-with-icons-tabs-1"
+                    role="tab" aria-controls="ex-with-icons-tabs-1" aria-selected="true"><i
+                        class="fas fa-check-double"></i>&nbsp;Checked Out</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a data-mdb-tab-init class="nav-link" id="ex-with-icons-tab-2" href="#ex-with-icons-tabs-2" role="tab"
+                    aria-controls="ex-with-icons-tabs-2" aria-selected="false"><i
+                        class="fas fa-chart-line fa-fw me-2"></i>Your Requests</a>
+            </li>
+
+        </ul>
+        <!-- Tabs navs -->
+
+        <!-- Tabs content -->
+        <div class="tab-content" id="ex-with-icons-content">
+            <div class="tab-pane fade show active" id="ex-with-icons-tabs-1" role="tabpanel"
+                aria-labelledby="ex-with-icons-tab-1">
+                <div id="checked-out-items"></div>
+            </div>
+            <div class="tab-pane fade" id="ex-with-icons-tabs-2" role="tabpanel" aria-labelledby="ex-with-icons-tab-2">
+                Tab 2 content
+            </div>
+
+        </div>
+        <!-- Tabs content -->
+    </div>
+
+
 </body>
 <script>
     $(document).ready(function () {
@@ -132,22 +173,56 @@
 
     function displayResults(results) {
         var searchResultsDiv = $("#search_results");
-        searchResultsDiv.empty(); 
+        searchResultsDiv.empty();
         if (results.length === 0) {
             searchResultsDiv.html("<p>No catalogue found.</p>");
             return;
         }
-        var table = $("<table>").addClass("table table-hover search-results-table");
-        var headerRow = $("<tr>").appendTo(table);
-        $("<th>").text("Title").appendTo(headerRow);
-        $("<th>").text("Catalogue ID").appendTo(headerRow);
+
+        // Iterate over the results and create a card for each
         $.each(results, function (index, result) {
-            var row = $("<tr>").appendTo(table);
-            $("<td>").text(result.title).appendTo(row);
-            $("<td>").text(result.catalogue_type).appendTo(row);
+            var card = $("<div>").addClass("card mb-3").appendTo(searchResultsDiv);
+            var cardBody = $("<div>").addClass("card-body").appendTo(card);
+            $("<h5>").addClass("card-title").text(result.title).appendTo(cardBody);
+            $("<p>").addClass("card-text").text("Catalogue ID: " + result.catalogue_id).appendTo(cardBody);
+            $("<p>").addClass("card-text").text("Catalogue Type: " + result.catalogue_type).appendTo(cardBody);
+            $("<p>").addClass("card-text").text("Author: " + result.author_name).appendTo(cardBody);
+            $("<p>").addClass("card-text").text("Publisher: " + result.publisher_name).appendTo(cardBody);
+            $("<p>").addClass("card-text").text("Year: " + result.purchase_date).appendTo(cardBody);
         });
-        searchResultsDiv.append(table);
     }
+
+    // Function to load checked-out items when Tab 1 is clicked
+    $('#ex-with-icons-tab-1').on('click', function () {
+        // Fetch checked-out items data from the server
+        $.get('/issued', function (data) {
+            // Clear existing content
+            $('#checked-out-items').empty();
+
+            // Check if there are any checked-out items
+            if (data.length === 0) {
+                $('#checked-out-items').html('<p>No checked-out items.</p>');
+            } else {
+                // Populate the div with checked-out items data
+                var itemList = '<ul>';
+                data.forEach(function (item) {
+                    itemList += '<li>' + item.catalogue_name + '</li>'; // Example: Assuming 'title' is the property for item name
+                });
+                itemList += '</ul>';
+                $('#checked-out-items').html(itemList);
+            }
+        }).fail(function (xhr, status, error) {
+            console.error('Error fetching checked-out items:', error);
+            $('#checked-out-items').html('<p>Error fetching checked-out items.</p>');
+        });
+    });
+
+    $(document).ready(function () {
+    $('#ex-with-icons-tab-1').trigger('click');
+});
+
+
+
 </script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>
 

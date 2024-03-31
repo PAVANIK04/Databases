@@ -91,7 +91,7 @@
         <div class="row">
             <div class="col-md-12">
                 <button type="button" class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init
-                    data-mdb-target="#add_cat">
+                    data-mdb-target="#add_ext">
                     Add an External Library
                 </button>
                 <!-- <button type="button" class="btn btn-success" data-mdb-ripple-init data-mdb-modal-init
@@ -122,7 +122,7 @@
     </div>
 
 
-    <div class="modal fade" id="add_cat" tabindex="-1" aria-labelledby="add_cat" aria-hidden="true">
+    <div class="modal fade" id="add_ext" tabindex="-1" aria-labelledby="add_ext" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -248,56 +248,46 @@
     </div>
 
     <script>
-        // $(document).ready(function () {
-        //     $.get('/catalogues', function (data) {
-        //         $('#libList').empty();
+        $(document).ready(function () {
+            $.get('/external_library/exchanges', function (data) {
+                $('#libList').empty();
 
-        //         // Create table
-        //         var table = $('<table class="table"></table>');
+                // Create table
+                var table = $('<table class="table"></table>');
 
-        //         // Create table header
-        //         var tableHeader = $('<thead class="thead-dark"></thead>');
-        //         var headerRow = $('<tr></tr>');
-        //         headerRow.append('<th>Title</th>');
-        //         headerRow.append('<th>Catalogue ID</th>');
-        //         headerRow.append('<th>Category No</th>');
+                // Create table header
+                var tableHeader = $('<thead class="thead-dark"></thead>');
+                var headerRow = $('<tr></tr>');
+                headerRow.append('<th>ID</th>');
+                headerRow.append('<th>Exchanges</th>');
+                headerRow.append('<th>Amount</th>');
+                headerRow.append('<th>Type</th>');
+                headerRow.append('<th>Actions</th>'); // New column for Actions
+                tableHeader.append(headerRow);
+                table.append(tableHeader);
 
-        //         headerRow.append('<th>Type</th>');
-        //         headerRow.append('<th>Author</th>');
-        //         headerRow.append('<th>Publisher</th>');
+                // Create table body
+                var tableBody = $('<tbody></tbody>');
+                data.forEach(function (ext_lib_data) {
+                    var row = $('<tr></tr>');
+                    row.append('<td>' + ext_lib_data.library_id + '</td>');
+                    row.append('<td>' + ext_lib_data.exchanges + '</td>');
+                    row.append('<td>' + ext_lib_data.amount + '</td>');
+                    row.append('<td>' + ext_lib_data.type + '</td>');
 
-        //         headerRow.append('<th>Count</th>');
-        //         headerRow.append('<th>Actions</th>'); // New column for Actions
-        //         tableHeader.append(headerRow);
-        //         table.append(tableHeader);
+                    // Actions 
+                    var actions = '<td>' +
+                        '<button class="btn btn-primary btn-sm" onclick="updateCatalogue(' + ext_lib_data.library_id + ')">Update</button>' +
+                        '<button class="btn btn-danger btn-sm" onclick="deleteCatalogue(' + ext_lib_data.library_id + ')">Delete</button>' +
+                        '</td>';
+                    row.append(actions);
 
-        //         // Create table body
-        //         var tableBody = $('<tbody></tbody>');
-        //         data.forEach(function (catalogue) {
-        //             var row = $('<tr></tr>');
-        //             row.append('<td>' + catalogue.title + '</td>');
-        //             row.append('<td>' + catalogue.catalogue_id + '</td>');
-        //             row.append('<td>' + catalogue.category_no + '</td>');
-
-        //             row.append('<td>' + catalogue.catalogue_type + '</td>');
-        //             row.append('<td>' + catalogue.author_name + '</td>');
-        //             row.append('<td>' + catalogue.publisher_name + '</td>');
-
-        //             row.append('<td>' + catalogue.count + '</td>');
-
-        //             // Actions 
-        //             var actions = '<td>' +
-        //                 '<button class="btn btn-primary btn-sm" onclick="updateCatalogue(' + catalogue.catalogue_id + ')">Update</button>' +
-        //                 '<button class="btn btn-danger btn-sm" onclick="deleteCatalogue(' + catalogue.catalogue_id + ')">Delete</button>' +
-        //                 '</td>';
-        //             row.append(actions);
-
-        //             tableBody.append(row);
-        //         });
-        //         table.append(tableBody);
-        //         $('#libList').append(table);
-        //     });
-        // });
+                    tableBody.append(row);
+                });
+                table.append(tableBody);
+                $('#libList').append(table);
+            });
+        });
 
         // function updateCatalogue(catalogueId) {
         //     //TODO:

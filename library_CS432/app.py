@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import render_template, request, redirect, url_for, session, abort, jsonify
-import time
+import time, random, string
+from datetime import date
 
 from flask_mysqldb import MySQL
 
@@ -91,6 +92,7 @@ def home(username):
     if 'username' in session and session['username'] == username and session['role'] == 'Student':
         return render_template('home.html', username=username)
     return redirect(url_for('login'))
+
 
 
 @app.route('/admin/<username>')
@@ -212,19 +214,67 @@ def get_catalogues():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+#get by id catalogue data
+@app.route('/catalogues/<int:catalogue_id>', methods=['GET'])
+def get_catalogue_by_id(catalogue_id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT c.catalogue_id, c.category_no, c.cost, c.title, c.catalogue_type, a.name AS author_name, p.name AS publisher_name, c.purchase_date, c.subscription_end, c.count FROM catalogue c JOIN author a ON c.author_id = a.author_id JOIN publisher p ON c.publisher_id = p.publisher_id WHERE c.catalogue_id = %s", (catalogue_id,))
+        result = cur.fetchone()
+        cur.close()
 
+        if result:
+            catalogue = {
+                'catalogue_id': result[0],
+                'category_no': result[1],
+                'cost': result[2],
+                'title': result[3],
+                'catalogue_type': result[4],
+                'author_name': result[5],
+                'publisher_name': result[6],
+                'purchase_date': result[7],
+                'subscription_end': result[8],
+                'count': result[9]
+            }
+            return jsonify(catalogue)
+        else:
+            return jsonify({'message': 'Catalogue not found'}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    
 @app.route('/catalogue/search', methods=['POST'])
 def search_catalogue():
-    search_query = request.form['search_query']
-    cur = mysql.connection.cursor()
-    cur.execute(
-        "SELECT title, author_id, catalogue_type, count FROM catalogue WHERE title LIKE %s",
-        ('%' + search_query + '%',)
-    )
-    results = cur.fetchall()
-    cur.close()
-    catalogue_list = [{'title': result[0], 'catalogue_type': result[2]} for result in results]
-    return jsonify(catalogue_list)
+    try:
+        search_query = request.form['search_query']
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "SELECT c.catalogue_id, c.category_no, c.cost, c.title, c.catalogue_type, a.name AS author_name, p.name AS publisher_name, c.purchase_date, c.subscription_end, c.count FROM catalogue c JOIN author a ON c.author_id = a.author_id JOIN publisher p ON c.publisher_id = p.publisher_id WHERE c.title LIKE %s",
+            ('%' + search_query + '%',)
+        )
+        results = cur.fetchall()
+        cur.close()
+
+        catalogue_list = []
+        for row in results:
+            catalogue = {
+                'catalogue_id': row[0],
+                'category_no': row[1],
+                'cost': row[2],
+                'title': row[3],
+                'catalogue_type': row[4],
+                'author_name': row[5],
+                'publisher_name': row[6],
+                'purchase_date': row[7],
+                'subscription_end': row[8],
+                'count': row[9]
+            }
+            catalogue_list.append(catalogue)
+
+        return jsonify(catalogue_list)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 # Route to create a category
@@ -301,7 +351,52 @@ def add_catalogue():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
+# to update catalogue    
+@app.route('/update_catalogue', methods=['POST'])
+def update_catalogue():
+    catalogue_id = request.form['catalogueId']
+    title = request.form['title']
+    author_name = request.form['authorName']
+    publisher_name = request.form['publisherName']
+    category_no = request.form['categoryNo']
+    cost = request.form['cost']
+    catalogue_type = request.form['catalogueType']
+    purchase_date = request.form['purchaseDate']
+    subscription_end = request.form['subscriptionEnd']
+    count = request.form['count']
 
+    try:
+        # Update author
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT author_id FROM author WHERE name = %s", (author_name,))
+        author_id = cur.fetchone()
+        if author_id is None:
+            cur.execute("INSERT INTO author (name) VALUES (%s)", (author_name,))
+            mysql.connection.commit()
+            author_id = cur.lastrowid
+        else:
+            author_id = author_id[0]
+
+        # Update publisher
+        cur.execute("SELECT publisher_id FROM publisher WHERE name = %s", (publisher_name,))
+        publisher_id = cur.fetchone()
+        if publisher_id is None:
+            cur.execute("INSERT INTO publisher (name) VALUES (%s)", (publisher_name,))
+            mysql.connection.commit()
+            publisher_id = cur.lastrowid
+        else:
+            publisher_id = publisher_id[0]
+
+        # Update catalogue
+        cur.execute("UPDATE catalogue SET title = %s, author_id = %s, publisher_id = %s, category_no = %s, cost = %s, catalogue_type = %s, purchase_date = %s, subscription_end = %s, count = %s WHERE catalogue_id = %s",
+                    (title, author_id, publisher_id, category_no, cost, catalogue_type, purchase_date, subscription_end, count, catalogue_id,))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'success': True, 'message': 'Catalogue updated successfully'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+    
 # To Delete a catalogue
 
 @app.route('/delete_catalogue/<int:catalogue_id>', methods=['DELETE'])
@@ -391,7 +486,137 @@ def get_recomend():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+
+@app.route('/external_library/exchanges', methods=['GET'])
+def get_ext_lib():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT library_id, exchanges, amount, type FROM external_library")
+        results = cur.fetchall()
+        cur.close()
+
+        ext_lib_data = []
+        for row in results:
+            ext_lib = {
+                'library_id': row[0],
+                'exchanges': row[1],
+                'amount': row[2],
+                'type': row[3],
+            }
+            ext_lib_data.append(ext_lib)
+
+        return jsonify(ext_lib_data)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/home/<username>/issue')
+def issue(username):
+    if 'username' in session and session['username'] == username and session['role'] == 'Student':
+        return render_template('issue.html', username=username)
+    return redirect(url_for('login'))
+
+def generate_issue_id():
+    current_time_ms = int(time.time() * 1000)
+    random_component = random.randint(10000, 99999)
+    unique_number = int(str(current_time_ms)[-3:]+str(random_component)[-2:])
+    return unique_number
+
+def get_current_date():
+    return date.today()
+
+# Route for issuing items
+@app.route('/issue_item', methods=['POST'])
+def issue_item():
+    try:
+        catalogue_id = request.form['catalogue_id']
+        username = session.get('username')
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT user_ID FROM user WHERE username = %s", (username,))
+        user_ID = cur.fetchone()
+        
+        # Generate unique issue_id and current date
+        issue_id = generate_issue_id()
+        issue_date = get_current_date()
+
+        # Insert into the issue table to generate the issue_id
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO issue (issue_id, issue_date) VALUES (%s, %s)", (issue_id, issue_date))
+        mysql.connection.commit()
+
+        # Insert into the issuing table
+        cur.execute("INSERT INTO issueing (catalogue_id, user_ID, issue_id) VALUES (%s, %s, %s)", (catalogue_id, user_ID, issue_id))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({'success': True, 'message': 'Item issued successfully', 'issue_id': issue_id}), 200
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
+@app.route('/issued', methods=['GET'])
+def get_issued():
+    username = session.get('username')
+    try:
+        # Fetch the user_ID based on the username
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT user_ID FROM user WHERE username = %s", (username,))
+        user_id_row = cur.fetchone()
+        app.logger.info(user_id_row)
+        cur.close()
+
+        if user_id_row:
+            # Fetch issued items data including catalogue name and issue date
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                SELECT i.catalogue_id, c.title AS catalogue_name, iss.issue_date
+                FROM issueing AS i
+                JOIN catalogue AS c ON i.catalogue_id = c.catalogue_id
+                JOIN issue AS iss ON i.issue_id = iss.issue_id
+                WHERE i.user_ID = %s
+            """, (user_id_row,))
+            issued_items = cur.fetchall()
+            cur.close()
+
+            # Format the fetched data
+            issued = []
+            for item in issued_items:
+                issued.append({
+                    'user_ID': user_id_row[0],
+                    'catalogue_id': item[0],
+                    'catalogue_name': item[1],
+                    'issue_date': item[2]
+                })
+
+            return jsonify(issued)
+        else:
+            return jsonify({'error': 'User not found'}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+#get room data
+@app.route('/get_rooms')
+def get_room_availability():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM rooms")
+        rooms_data = cur.fetchall()
+        cur.close()
+        data = []
+        for item in rooms_data:
+            data.append({
+                'room_id': item[0],
+                'occupied': item[1],
+                'entry_time': item[2],
+                'leaving_time': item[3]
+            })
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    
 if __name__ == '__main__':
     app.run(debug=True)

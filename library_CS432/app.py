@@ -19,22 +19,31 @@ app.config['MYSQL_DB'] = config.MYSQL_DB
 mysql = MySQL(app)
 
 
-# Aashmun Gupta
+# Anmol Kumar
 @app.route('/')
 def index():
-    # if 'username' in session and 'role' in session:
-    #     return redirect(url_for(session['role'].lower(), username=session['username']))
-    # return redirect(url_for('login'))
     return render_template('homepage/index.html')
+
+
+@app.route('/unavailable')
+def unavailable():
+    return render_template('unavailable.html')
+
+
 @app.route('/features')
 def features():
     return render_template('homepage/features.html')
+
+
 @app.route('/contact')
 def contact():
     return render_template('homepage/contact.html')
+
+
 @app.route('/subscribe')
 def subscribe():
     return render_template('homepage/subscribe.html')
+
 
 @app.route('/search-catalogue', methods=['GET', 'POST'])
 def search_catalogue_page():
@@ -61,35 +70,7 @@ def search_catalogue_page():
     return render_template('homepage/search-catalogue-page.html', results=catalogue_list, search_query=search_query)
 
 
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        error = None
-        if not username:
-            error = 'Username is required.'
-        elif not password:
-            error = 'Password is required.'
-
-        cur = mysql.connection.cursor()
-        cur.execute(
-            'SELECT * FROM user WHERE username = %s', (username,)
-        )
-        user = cur.fetchone()
-        if user:
-            error = 'Account already exists !'
-
-        if error is None:
-            cur.execute('INSERT INTO user (username, password) VALUES (%s, %s)', (username, password,))
-            mysql.connection.commit()
-
-        cur.close()
-
-    return render_template('register.html')
-
-
+# Aashmun Gupta
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -108,6 +89,10 @@ def login():
             session['role'] = users[8]
             if users[8] == 'Admin':
                 return redirect(url_for('admin', username=username))
+            if users[8] == 'Staff':
+                return redirect(url_for('staff', username=username))
+            if users[8] == 'InterLibrary':
+                return redirect(url_for('external', username=username))
             if users[8] == 'Student':
                 return redirect(url_for('home', username=username))
             if users[8] == 'Faculty':
@@ -129,11 +114,23 @@ def home(username):
     return redirect(url_for('login'))
 
 
+@app.route('/external/<username>')
+def external(username):
+    if 'username' in session and session['username'] == username and session['role'] == 'InterLibrary':
+        return render_template('external.html', username=username)
+    return redirect(url_for('login'))
+
+
+@app.route('/staff/<username>')
+def staff(username):
+    if 'username' in session and session['username'] == username and session['role'] == 'Staff':
+        return render_template('staff.html', username=username)
+    return redirect(url_for('login'))
+
 
 @app.route('/admin/<username>')
 def admin(username):
     if 'username' in session and session['username'] == username and session['role'] == 'Admin':
-        library_data = get_library_data()
         return render_template('admin/index.html', username=username)
     return redirect(url_for('login'))
 
@@ -141,7 +138,6 @@ def admin(username):
 @app.route('/admin/<username>/external')
 def ext_lib(username):
     if 'username' in session and session['username'] == username and session['role'] == 'Admin':
-        library_data = get_library_data()
         return render_template('admin/external_library.html', username=username)
     return redirect(url_for('login'))
 
@@ -387,6 +383,7 @@ def add_catalogue():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
+
 # to update catalogue    
 @app.route('/update_catalogue', methods=['POST'])
 def update_catalogue():
@@ -547,6 +544,7 @@ def get_ext_lib():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 @app.route('/home/<username>/issue')
 def issue(username):
     if 'username' in session and session['username'] == username and session['role'] == 'Student':
@@ -561,6 +559,7 @@ def generate_issue_id():
 
 def get_current_date():
     return date.today()
+
 
 # Route for issuing items
 @app.route('/issue_item', methods=['POST'])
@@ -633,6 +632,7 @@ def get_issued():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 #get room data
 @app.route('/get_rooms')
 def get_room_availability():
@@ -652,17 +652,17 @@ def get_room_availability():
         return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-@app.route('/about', methods=['GET','POST'])
+
+
+@app.route('/about')
 def about():
     return render_template('homepage/about.html')
 
-@app.route('/LMS', methods=['GET','POST'])
+
+@app.route('/LMS')
 def LMS():
     return render_template('LMS.html')
 
+
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-    

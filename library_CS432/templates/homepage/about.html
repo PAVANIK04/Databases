@@ -39,11 +39,8 @@
             <ul class="navbar-nav justify-content-between ">
               <div class="User_option">
                 <li class="">
-                  <a class="mr-4" href="">
+                  <a class="mr-4" href="{{ url_for('login' ) }}">
                     Login
-                  </a>
-                  <a class="" href="">
-                    Sign up
                   </a>
                 </li>
               </div>
@@ -107,7 +104,7 @@
               modern facilities, the library plays a crucial role in supporting the academic and research endeavors of
               the IITGN community.
             </p>
-            <a href="./contact.html">
+            <a href="{{ url_for('contact' ) }}">
               Know More
             </a>
           </div>

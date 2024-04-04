@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Service Unavailable</title>
+</head>
+<body>
+    <h1>Service is currently unavailable</h1>
+    <p>Please wait, you will be redirected to the homepage in 5 seconds.</p>
+    <script type="text/javascript">
+        // Redirect to homepage after 5 seconds
+        setTimeout(function() {
+            window.location.href = "{{ url_for('index') }}";  // Assuming your homepage route is named 'index'
+        }, 5000);
+    </script>
+</body>
+</html>

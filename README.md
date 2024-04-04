@@ -7,9 +7,9 @@ In `config.py`, ensure to set up the following variables:
 MYSQL_HOST = 'localhost'
 MYSQL_USER = 'root'
 MYSQL_PASSWORD = '<password>'
-MYSQL_DB = '<database>'
+MYSQL_DB = 'Library'
 
-SECRET_KEY = '<Enter the secret key>'
+SECRET_KEY = '123456789'
 ```
 
 ### Dependencies

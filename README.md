@@ -1,24 +1,64 @@
 # CS432
-In config.py:
 
-    MYSQL_HOST = 'localhost'
-    MYSQL_USER = 'root'
-    MYSQL_PASSWORD = '<password>'
-    MYSQL_DB = '<database>'
+## Configuration Setup
+In `config.py`, ensure to set up the following variables:
 
-    SECRET_KEY = '<Enter the secret key>'
+```python
+MYSQL_HOST = 'localhost'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = '<password>'
+MYSQL_DB = '<database>'
 
+SECRET_KEY = '<Enter the secret key>'
+```
 
-run the following commands in your venv:
+### Dependencies
+Make sure to install the required dependencies in your virtual environment using the following commands:
 
-    pip install Flask
-    pip install Flask-mysqldb
+```bash
+pip install Flask
+pip install Flask-mysqldb
+```
 
-#### The table 'users' has been used
+#### Database Table
+The application utilizes the 'users' table.
 
-### To generate SECRET_KEY:
-    
-    import secrets
+### Generating SECRET_KEY:
+You can generate a secure secret key by running the following Python script:
 
-    secret_key = secrets.token_hex(16)
-    print("Generated Secret Key:", secret_key)
+```python
+import secrets
+
+secret_key = secrets.token_hex(16)
+print("Generated Secret Key:", secret_key)
+```
+
+### Creating a Virtual Environment
+If you haven't set up a virtual environment (`pyvenv`), you can do so using the following command:
+
+```bash
+python -m venv your_venv_name
+```
+
+Activate the virtual environment:
+
+- On Windows:
+```bash
+your_venv_name\Scripts\activate
+```
+- On Unix or MacOS:
+```bash
+source your_venv_name/bin/activate
+```
+
+### Running the Application
+To start the Flask application, execute `flask run` in your terminal.
+
+### Cloning Repository
+To get started with the project, clone the repository from the following URL:
+
+```bash
+git clone https://github.com/AshStorm17/CS432
+```
+
+Feel free to reach out if you have any questions or issues!

@@ -282,8 +282,7 @@
                     <form id="updateCatalogueForm">
                         <div class="mb-3">
                             <label for="update_cat_id" class="form-label">Catalogue ID</label>
-                            <input type="text" class="form-control" id="update_cat_id" name="catalogueId" disabled
-                                required>
+                            <input type="text" class="form-control" id="update_cat_id" name="catalogueId" required>
                         </div>
                         <div class="mb-3">
                             <label for="update_title" class="form-label">Title</label>
@@ -458,25 +457,21 @@
 
         // Function to handle form submission for updating catalogue
         $('#updateCatalogueForm').submit(function (event) {
-            event.preventDefault(); // Prevent the default form submission
+            event.preventDefault();
 
-            // Serialize form data
+
             var formData = $(this).serialize();
+            console.log('Form data:', formData);
 
-            // Send AJAX request to update catalogue
             $.post('/update_catalogue', formData, function (response) {
-                // Close the modal
                 $('#update_cat').modal('hide');
 
-                // Optionally, you can handle success or error responses here
                 if (response.success) {
                     alert('Catalogue updated successfully!');
-                    // Optionally, reload the page or perform any other action
                 } else {
                     alert('Error: ' + response.message);
                 }
             }).fail(function (xhr, status, error) {
-                // Handle AJAX error
                 console.error('AJAX request failed:', error);
                 alert('AJAX request failed: ' + error);
             });

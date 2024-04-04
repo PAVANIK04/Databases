@@ -383,6 +383,25 @@ def add_catalogue():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
+@app.route('/rename')
+def rename():
+    return render_template('admin/rename.html')
+
+@app.route('/rename-table', methods=['POST'])
+def rename_table():
+    # Connect to your SQLite database
+    cur = mysql.connection.cursor()
+
+    # Execute the SQL query to rename the table
+    try:
+        cur.execute("ALTER TABLE recommendations RENAME TO course_reading;")
+        cur.commit()
+        return 'Table renamed successfully!', 200
+    except Exception as e:
+        cur.rollback()
+        return f'Error renaming table: {str(e)}', 500
+    finally:
+        cur.close()
 
 # to update catalogue    
 @app.route('/update_catalogue', methods=['POST'])

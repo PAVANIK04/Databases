@@ -617,7 +617,17 @@ def get_room_availability():
         return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
     
+@app.route('/about', methods=['GET','POST'])
+def about():
+    return render_template('about.html')
+
+@app.route('/LMS', methods=['GET','POST'])
+def LMS():
+    return render_template('LMS.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+    

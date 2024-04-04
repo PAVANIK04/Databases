@@ -204,3 +204,6 @@ Worked on Backend development.
 7. **Yash Patel (G1) -**
 Worked on Frontend Development.
 
+### References
+Template code flask + mySQL https://github.com/febin-george/flaskapp.
+Template for homepage - https://html.design/

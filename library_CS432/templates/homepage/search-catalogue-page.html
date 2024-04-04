@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!-- Site Metas -->
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>{{self._TemplateReference__context.name}}</title>
+
+    <!-- bootstrap core css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+
+    <!-- fonts style -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700|Raleway:400,700&display=swap" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- responsive style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+
+
+<body class="sub_page">
+    <div class="hero_area">
+        <!-- header section strats -->
+        <header class="header_section">
+            <div class="container-fluid">
+                <nav class="navbar navbar-expand-lg custom_nav-container">
+                    <a class="navbar-brand" href="index.html">
+                        <img src="images/il.png" alt="" />
+                    </a>
+                    <div class="navbar-collapse" id="">
+                        <ul class="navbar-nav justify-content-between ">
+                            <div class="User_option">
+                                <li class="">
+                                    <a class="mr-4" href="{{ url_for('login' ) }}">
+                                        Login
+                                    </a>
+                                    <a class="" href="{{ url_for('login' ) }}">
+                                        Sign up
+                                    </a>
+                                </li>
+                            </div>
+                        </ul>
+
+                        <div class="custom_menu-btn">
+                            <button onclick="openNav()">
+                                <span class="s-1">
+
+                                </span>
+                                <span class="s-2">
+
+                                </span>
+                                <span class="s-3">
+
+                                </span>
+                            </button>
+                        </div>
+                        <div id="myNav" class="overlay">
+                            <div class="overlay-content">
+                                <a href="/">HOME</a>
+                                <a href="/about">ABOUT</a>
+                                <a href="/features">FEATURES</a>
+                                <a href="/subscribe">SUBSCRIPTION</a>
+                                <a href="/contact">CONTACT US</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+        <!-- end header section -->
+    </div>
+    <br><br><br>
+    <section class="sale_section layout_padding-bottom">
+        <div class="container-fluid">
+            <div class="heading_container">
+                <h2>
+                    Catalogue Search
+                </h2>
+                <p>
+                    Search Results for "{{ search_query }}" </p>
+            </div>
+            <div id="searchResults" class="container mt-4">
+                <div class="row">
+                    {% for result in results %}
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title"><b> {{ result.title }}</b></h5>
+                                <p class="card-text">Author: {{ result.author_name }}</p>
+                                <p class="card-text">Publisher: {{ result.publisher_name }}</p>
+                                <p class="card-text">Material Type: {{ result.catalogue_type }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+    <!-- end sale section -->
+
+
+    <section class="info_section ">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="info_contact">
+                        <h5>
+                            About IITGN Library
+                        </h5>
+                        <div>
+                            <div class="img-box">
+                                <img src="{{ url_for('static', filename='images/location.png') }}" width="18px" alt="">
+                            </div>
+                            <p>
+                                Block 13, Academic Area, IIT Gandhinagar, Palaj, Gujarat 382055
+                            </p>
+                        </div>
+                        <div>
+                            <div class="img-box">
+                                <img src="{{ url_for('static', filename='images/phone.png') }}" width="12px" alt="">
+                            </div>
+                            <p>
+                                <li>079 2395 2431</li>
+                                Central Library, IIT Gandhinagar, Primary phone
+                            </p>
+                        </div>
+                        <div>
+                            <div class="img-box">
+                                <img src="{{ url_for('static', filename='images/mail.png') }}" width="18px" alt="">
+                            </div>
+                            <p>
+                                libraryservices@iitgn.ac.in
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info_info">
+                        <h5>
+                            Information
+                        </h5>
+                        <p>
+                            <li>Library Hours</li>
+                            Monday to Friday: 9.00 a.m. to 2.00 a.m. Saturday, Sunday, and Holidays: 9.00 a.m. to 12.00
+                            a.m.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info_form ">
+                        <h5>
+                            IITGN library
+                        </h5>
+                        <form action="">
+                            <input type="email" placeholder="Enter your email">
+                            <button>
+                                Subscribe
+                            </button>
+                        </form>
+                        <div class="social_box">
+                            <a href="https://www.facebook.com/iitgn.official/">
+                                <img src="{{ url_for('static', filename='images/fb.png') }}" alt="">
+                            </a>
+                            <a href="https://x.com/iitgn?t=JYeKmHSoJOT6fr14Qa41Pw&s=08">
+                                <img src="{{ url_for('static', filename='images/twitter.png') }}" alt="">
+                            </a>
+                            <a
+                                href="https://www.linkedin.com/school/indian-institute-of-technology-gandhinagar-iitgn-/">
+                                <img src="{{ url_for('static', filename='images/linkedin.png') }}" alt="">
+                            </a>
+                            <a href="https://www.youtube.com/@IITGNOfficial">
+                                <img src="{{ url_for('static', filename='images/youtube.png') }}" alt="">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- end info_section -->
+
+
+    <!-- footer section -->
+    <section class="container-fluid footer_section ">
+        <div class="container">
+            <p>
+                <!-- &copy; <span id="displayYear"></span> All Rights Reserved By
+        <a href="https://html.design/">Free Html Templates</a> -->
+            </p>
+        </div>
+    </section>
+    <!-- end  footer section -->
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+
+
+</body>
+</body>
+
+</html>

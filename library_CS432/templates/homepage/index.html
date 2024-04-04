@@ -12,17 +12,18 @@
   <meta name="description" content="" />
   <meta name="author" content="" />
 
-  <title>Teaser</title>
+  <title>{{self._TemplateReference__context.name}}</title>
 
   <!-- bootstrap core css -->
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
 
   <!-- fonts style -->
   <link href="https://fonts.googleapis.com/css?family=Poppins:400,700|Raleway:400,700&display=swap" rel="stylesheet">
   <!-- Custom styles for this template -->
-  <link href="css/style.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
   <!-- responsive style -->
-  <link href="css/responsive.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 </head>
 
 <body>
@@ -38,10 +39,10 @@
             <ul class="navbar-nav justify-content-between ">
               <div class="User_option">
                 <li class="">
-                  <a class="mr-4" href="">
+                  <a class="mr-4" href="{{ url_for('login' ) }}">
                     Login
                   </a>
-                  <a class="" href="">
+                  <a class="" href="{{ url_for('login' ) }}">
                     Sign up
                   </a>
                 </li>
@@ -63,11 +64,11 @@
             </div>
             <div id="myNav" class="overlay">
               <div class="overlay-content">
-                <a href="index.html">HOME</a>
-                <a href="about.html">ABOUT</a>
-                <a href="house.html">FEATURES</a> 
-                <a href="price.html">SUBSCRIPTION</a>
-                <a href="contact.html">CONTACT US</a>
+                <a href="/">HOME</a>
+                <a href="/about">ABOUT</a>
+                <a href="/features">FEATURES</a>
+                <a href="/subscribe">SUBSCRIPTION</a>
+                <a href="/contact">CONTACT US</a>
               </div>
             </div>
           </div>
@@ -87,7 +88,8 @@
                 LIBRARY
               </h1>
               <p>
-                The IIT Gandhinagar library is your gateway to a world of knowledge, offering a vast collection of resources to fuel your academic journey.
+                The IIT Gandhinagar library is your gateway to a world of knowledge, offering a vast collection of
+                resources to fuel your academic journey.
               </p>
               <!-- <div class="btn-box">
                 <a href="" class="">
@@ -105,22 +107,17 @@
   <!-- find section -->
   <section class="find_section ">
     <div class="container">
-      <form action="">
-        <div class=" form-row">
-          <div class="col-md-5">
-            <input type="text" class="form-control" placeholder="Search Your Categories ">
-          </div>
-          <div class="col-md-5">
-            <input type="text" class="form-control" placeholder="Location ">
-          </div>
-          <div class="col-md-2">
-            <button type="submit" class="">
-              search
-            </button>
-          </div>
+      <form action="/search-catalogue" method="post">
+        <div class="form-row">
+            <div class="col-md-10">
+                <input type="text" class="form-control" name="search_query" placeholder="Search The Catalogue">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
         </div>
-
-      </form>
+    </form>
+    
     </div>
   </section>
 
@@ -131,25 +128,30 @@
 
   <section class="about_section layout_padding-bottom">
     <div class="square-box">
-      <img src="images/square.png" alt="">
+      <!-- <img src="images/square.png" alt=""> -->
+      <img src="{{ url_for('static', filename='images/square.png') }}" alt="">
     </div>
     <div class="container">
       <div class="row">
         <div class="col-md-6">
           <div class="img-box">
-            <img src="images/lib.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/lib.jpg') }}" alt="">
           </div>
         </div>
         <div class="col-md-6">
           <div class="detail-box">
-            <div class="heading_container">
+            <div class="heading_container border">
               <h2>
                 About IITGN library
               </h2>
             </div>
             <p>
-              
-The IIT Gandhinagar Library is a vital resource hub for students and faculty members alike, offering a vast collection of academic literature, research materials, and multimedia resources. It serves as a quiet and conducive space for study, research, and intellectual exploration. With its extensive collection and modern facilities, the library plays a crucial role in supporting the academic and research endeavors of the IITGN community.
+
+              The IIT Gandhinagar Library is a vital resource hub for students and faculty members alike, offering a
+              vast collection of academic literature, research materials, and multimedia resources. It serves as a quiet
+              and conducive space for study, research, and intellectual exploration. With its extensive collection and
+              modern facilities, the library plays a crucial role in supporting the academic and research endeavors of
+              the IITGN community.
             </p>
             <!-- <a href="./contact.html">
               Know More
@@ -177,11 +179,11 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
       <div class="sale_container">
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG8.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG8.jpg') }}" alt="">
           </div>
           <div class="detail-box">
             <h6>
-             Book Corner
+              Book Corner
             </h6>
             <p>
               You can enjoy reading loads of books while you stay here, as library is open till 2 am.
@@ -190,7 +192,7 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
         </div>
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG1.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG1.jpg') }}" alt="">
           </div>
           <div class="detail-box">
             <h6>
@@ -203,7 +205,7 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
         </div>
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG3.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG3.jpg') }}" alt="">
           </div>
           <div class="detail-box">
             <h6>
@@ -216,7 +218,9 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
         </div>
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG4.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG4.jpg') }}" alt="">
+
+
           </div>
           <div class="detail-box">
             <h6>
@@ -229,7 +233,8 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
         </div>
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG5.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG5.jpg') }}" alt="">
+
           </div>
           <div class="detail-box">
             <h6>
@@ -242,14 +247,15 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
         </div>
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG7.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG7.jpg') }}" alt="">
           </div>
           <div class="detail-box">
             <h6>
               Reference Corner
             </h6>
             <p>
-              The noticeboard gives reader insights, while the reference corner displays books recently returned, to know about the current reading trend.
+              The noticeboard gives reader insights, while the reference corner displays books recently returned, to
+              know about the current reading trend.
             </p>
           </div>
         </div>
@@ -289,23 +295,26 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
             </div>
             <div class="text-box">
               <h2>
-                11,800 Rs
+                Rs. 11,800
               </h2>
               <ul>
                 <li>
                   In this you get access
                 </li>
                 <li>
-                to graduate,  UG,PG 
+                  to graduate, UG,PG
                 </li>
                 <li>
                   and Research programs.
                 </li>
                 <li>
-                  On request submitted in 
+                  On request submitted in
                 </li>
                 <li>
                   a prescribed application form.
+                </li>
+                <li>
+                  &nbsp;
                 </li>
               </ul>
             </div>
@@ -328,11 +337,11 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
             </div>
             <div class="text-box">
               <h2>
-                23,600 Rs
+                Rs. 23,600
               </h2>
               <ul>
                 <li>
-                  This is a 
+                  This is a
                 </li>
                 <li>
                   membership extended to
@@ -344,7 +353,7 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
                   organizations in public
                 </li>
                 <li>
-                 and private sector 
+                  and private sector
                 </li>
                 <li>
                   through form.
@@ -370,7 +379,7 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
             </div>
             <div class="text-box">
               <h2>
-                1,180 Rs
+                Rs. 1,180
               </h2>
               <ul>
                 <li>
@@ -383,7 +392,7 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
                   Academics, Researchers & Students,
                 </li>
                 <li>
-                  affiliated with academic 
+                  affiliated with academic
                 </li>
                 <li>
                   and public funded
@@ -418,7 +427,10 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
               </h2>
             </div>
             <p>
-              The IITGN library is a prime knowledge hub, offering diverse academic literature and research materials. With modern facilities and digital resources, it provides students and faculty access to authoritative sources across disciplines. Staffed by knowledgeable professionals, it supports scholarly inquiry and academic growth within the institution.
+              The IITGN library is a prime knowledge hub, offering diverse academic literature and research materials.
+              With modern facilities and digital resources, it provides students and faculty access to authoritative
+              sources across disciplines. Staffed by knowledgeable professionals, it supports scholarly inquiry and
+              academic growth within the institution.
             </p>
             <!-- <a href="">
               Get A Quote
@@ -428,10 +440,11 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
         <div class="col-md-6">
           <div class="img-box">
             <div class="box b1">
-              <img src="images/IMG4.jpg" alt="">
+              <img src="{{ url_for('static', filename='images/IMG4.jpg') }}" alt="">
+
             </div>
             <div class="box b1">
-              <img src="images/IMG5.jpg" alt="">
+              <img src="{{ url_for('static', filename='images/IMG5.jpg') }}" alt="">
             </div>
           </div>
         </div>
@@ -525,8 +538,8 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
 
   <!-- client secction -->
 
-  
-                    -->
+
+  -->
 
   <!-- end client section -->
 
@@ -545,7 +558,10 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
         <div class="col-md-6 px-0">
           <div class="map_container">
             <div class="map-responsive">
-              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3666.869566599802!2d72.6842489!3d23.211423600000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395c2adec1f16d8d%3A0xdc447b8706689bc3!2sIndian%20Institute%20of%20Technology%20Gandhinagar!5e0!3m2!1sen!2sin!4v1654167187610!5m2!1sen!2sin" style="border:0; width: 100%; height: 400px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3666.869566599802!2d72.6842489!3d23.211423600000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395c2adec1f16d8d%3A0xdc447b8706689bc3!2sIndian%20Institute%20of%20Technology%20Gandhinagar!5e0!3m2!1sen!2sin!4v1654167187610!5m2!1sen!2sin"
+                style="border:0; width: 100%; height: 400px;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
           </div>
         </div>
@@ -581,7 +597,6 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
 
 
 
-  <!-- info section -->
   <section class="info_section ">
     <div class="container">
       <div class="row">
@@ -592,7 +607,7 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
             </h5>
             <div>
               <div class="img-box">
-                <img src="images/location.png" width="18px" alt="">
+                <img src="{{ url_for('static', filename='images/location.png') }}" width="18px" alt="">
               </div>
               <p>
                 Block 13, Academic Area, IIT Gandhinagar, Palaj, Gujarat 382055
@@ -600,7 +615,7 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
             </div>
             <div>
               <div class="img-box">
-                <img src="images/phone.png" width="12px" alt="">
+                <img src="{{ url_for('static', filename='images/phone.png') }}" width="12px" alt="">
               </div>
               <p>
                 <li>079 2395 2431</li>
@@ -609,7 +624,7 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
             </div>
             <div>
               <div class="img-box">
-                <img src="images/mail.png" width="18px" alt="">
+                <img src="{{ url_for('static', filename='images/mail.png') }}" width="18px" alt="">
               </div>
               <p>
                 libraryservices@iitgn.ac.in
@@ -628,7 +643,7 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
             </p>
           </div>
         </div>
-      
+
         <div class="col-md-4">
           <div class="info_form ">
             <h5>
@@ -642,16 +657,16 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
             </form>
             <div class="social_box">
               <a href="https://www.facebook.com/iitgn.official/">
-                <img src="images/fb.png" alt="">
+                <img src="{{ url_for('static', filename='images/fb.png') }}" alt="">
               </a>
               <a href="https://x.com/iitgn?t=JYeKmHSoJOT6fr14Qa41Pw&s=08">
-                <img src="images/twitter.png" alt="">
+                <img src="{{ url_for('static', filename='images/twitter.png') }}" alt="">
               </a>
               <a href="https://www.linkedin.com/school/indian-institute-of-technology-gandhinagar-iitgn-/">
-                <img src="images/linkedin.png" alt="">
+                <img src="{{ url_for('static', filename='images/linkedin.png') }}" alt="">
               </a>
               <a href="https://www.youtube.com/@IITGNOfficial">
-                <img src="images/youtube.png" alt="">
+                <img src="{{ url_for('static', filename='images/youtube.png') }}" alt="">
               </a>
             </div>
           </div>
@@ -659,7 +674,6 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
       </div>
     </div>
   </section>
-  <!-- end info_section -->
 
 
   <!-- footer section -->
@@ -674,9 +688,10 @@ The IIT Gandhinagar Library is a vital resource hub for students and faculty mem
   <!-- end  footer section -->
 
 
-  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
-  <script type="text/javascript" src="js/bootstrap.js"></script>
-  <script type="text/javascript" src="js/custom.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+
+  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/custom.js') }}"></script>
 
 
 </body>

@@ -12,19 +12,20 @@
   <meta name="description" content="" />
   <meta name="author" content="" />
 
-  <title>Teaser</title>
-
+  <title>{{self._TemplateReference__context.name}}</title>
 
   <!-- bootstrap core css -->
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
 
   <!-- fonts style -->
   <link href="https://fonts.googleapis.com/css?family=Poppins:400,700|Raleway:400,700&display=swap" rel="stylesheet">
   <!-- Custom styles for this template -->
-  <link href="css/style.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
   <!-- responsive style -->
-  <link href="css/responsive.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 </head>
+
 
 <body class="sub_page">
   <div class="hero_area">
@@ -39,10 +40,10 @@
             <ul class="navbar-nav justify-content-between ">
               <div class="User_option">
                 <li class="">
-                  <a class="mr-4" href="">
+                  <a class="mr-4" href="{{ url_for('login' ) }}">
                     Login
                   </a>
-                  <a class="" href="">
+                  <a class="" href="{{ url_for('login' ) }}">
                     Sign up
                   </a>
                 </li>
@@ -64,11 +65,11 @@
             </div>
             <div id="myNav" class="overlay">
               <div class="overlay-content">
-                <a href="index.html">HOME</a>
-                <a href="about.html">ABOUT</a>
-                <a href="house.html">FEATURES</a> 
-                <a href="price.html">SUBSCRIPTION</a>
-                <a href="contact.html">CONTACT US</a>
+                <a href="/">HOME</a>
+                <a href="/about">ABOUT</a>
+                <a href="/features">FEATURES</a>
+                <a href="/subscribe">SUBSCRIPTION</a>
+                <a href="/contact">CONTACT US</a>
               </div>
             </div>
           </div>
@@ -77,9 +78,7 @@
     </header>
     <!-- end header section -->
   </div>
-
-  <!-- sale section -->
-
+  <br><br><br>
   <section class="sale_section layout_padding-bottom">
     <div class="container-fluid">
       <div class="heading_container">
@@ -92,11 +91,11 @@
       <div class="sale_container">
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG8.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG8.jpg') }}" alt="">
           </div>
           <div class="detail-box">
             <h6>
-             Book Corner
+              Book Corner
             </h6>
             <p>
               You can enjoy reading loads of books while you stay here, as library is open till 2 am.
@@ -105,7 +104,7 @@
         </div>
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG1.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG1.jpg') }}" alt="">
           </div>
           <div class="detail-box">
             <h6>
@@ -118,7 +117,7 @@
         </div>
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG3.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG3.jpg') }}" alt="">
           </div>
           <div class="detail-box">
             <h6>
@@ -131,7 +130,9 @@
         </div>
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG4.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG4.jpg') }}" alt="">
+
+
           </div>
           <div class="detail-box">
             <h6>
@@ -144,7 +145,8 @@
         </div>
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG5.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG5.jpg') }}" alt="">
+
           </div>
           <div class="detail-box">
             <h6>
@@ -157,30 +159,30 @@
         </div>
         <div class="box">
           <div class="img-box">
-            <img src="images/IMG7.jpg" alt="">
+            <img src="{{ url_for('static', filename='images/IMG7.jpg') }}" alt="">
           </div>
           <div class="detail-box">
             <h6>
               Reference Corner
             </h6>
             <p>
-              The noticeboard gives reader insights, while the reference corner displays books recently returned, to know about the current reading trend.
+              The noticeboard gives reader insights, while the reference corner displays books recently returned, to
+              know about the current reading trend.
             </p>
           </div>
         </div>
       </div>
-      <div class="btn-box">
+      <!-- <div class="btn-box">
         <a href="">
           Find More
         </a>
-      </div>
+      </div> -->
     </div>
   </section>
+
   <!-- end sale section -->
 
 
-
-  <!-- info section -->
   <section class="info_section ">
     <div class="container">
       <div class="row">
@@ -191,7 +193,7 @@
             </h5>
             <div>
               <div class="img-box">
-                <img src="images/location.png" width="18px" alt="">
+                <img src="{{ url_for('static', filename='images/location.png') }}" width="18px" alt="">
               </div>
               <p>
                 Block 13, Academic Area, IIT Gandhinagar, Palaj, Gujarat 382055
@@ -199,7 +201,7 @@
             </div>
             <div>
               <div class="img-box">
-                <img src="images/phone.png" width="12px" alt="">
+                <img src="{{ url_for('static', filename='images/phone.png') }}" width="12px" alt="">
               </div>
               <p>
                 <li>079 2395 2431</li>
@@ -208,7 +210,7 @@
             </div>
             <div>
               <div class="img-box">
-                <img src="images/mail.png" width="18px" alt="">
+                <img src="{{ url_for('static', filename='images/mail.png') }}" width="18px" alt="">
               </div>
               <p>
                 libraryservices@iitgn.ac.in
@@ -227,7 +229,7 @@
             </p>
           </div>
         </div>
-      
+
         <div class="col-md-4">
           <div class="info_form ">
             <h5>
@@ -241,16 +243,16 @@
             </form>
             <div class="social_box">
               <a href="https://www.facebook.com/iitgn.official/">
-                <img src="images/fb.png" alt="">
+                <img src="{{ url_for('static', filename='images/fb.png') }}" alt="">
               </a>
               <a href="https://x.com/iitgn?t=JYeKmHSoJOT6fr14Qa41Pw&s=08">
-                <img src="images/twitter.png" alt="">
+                <img src="{{ url_for('static', filename='images/twitter.png') }}" alt="">
               </a>
               <a href="https://www.linkedin.com/school/indian-institute-of-technology-gandhinagar-iitgn-/">
-                <img src="images/linkedin.png" alt="">
+                <img src="{{ url_for('static', filename='images/linkedin.png') }}" alt="">
               </a>
               <a href="https://www.youtube.com/@IITGNOfficial">
-                <img src="images/youtube.png" alt="">
+                <img src="{{ url_for('static', filename='images/youtube.png') }}" alt="">
               </a>
             </div>
           </div>
@@ -273,10 +275,12 @@
   </section>
   <!-- end  footer section -->
 
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
 
-  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
-  <script type="text/javascript" src="js/bootstrap.js"></script>
-  <script type="text/javascript" src="js/custom.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+
 
 </body>
 </body>

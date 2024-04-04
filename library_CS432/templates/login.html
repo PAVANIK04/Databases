@@ -17,12 +17,18 @@
 <body>
   <header>
     <!-- <div id="intro" class="bg-image shadow-2-strong"> -->
-    <div class="mask d-flex align-items-center h-100" style="background-color: rgba(229, 228, 255, 0.8);">
+    <!-- <div class="mask d-flex align-items-center h-100" style="background-color: rgba(229, 228, 255, 0.8);"> -->
+    <div class="login-bg mask d-flex align-items-center h-100">
+
       <div class="container">
         <div class="row justify-content-center">
-          <div class="col-xl-5 col-md-8">
-            <form class="bg-white rounded shadow-5-strong p-5" action="{{ url_for('login') }}" method="post">
+          <div class="col-xl-5 col-md-8" style="backdrop-filter: blur(4px);
+          ">
+
+            <form class="bg-white rounded-8 shadow-5-strong p-5" action="{{ url_for('login') }}" method="post">
               <!-- Email input -->
+              <h3>Login</h3>
+              <br>
               <div class="form-outline mb-4" data-mdb-input-init>
                 <input type="text" id="username" name="username" class="form-control" />
                 <label class="form-label" for="username">Username</label>

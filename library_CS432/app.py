@@ -22,9 +22,44 @@ mysql = MySQL(app)
 # Aashmun Gupta
 @app.route('/')
 def index():
-    if 'username' in session and 'role' in session:
-        return redirect(url_for(session['role'].lower(), username=session['username']))
-    return redirect(url_for('login'))
+    # if 'username' in session and 'role' in session:
+    #     return redirect(url_for(session['role'].lower(), username=session['username']))
+    # return redirect(url_for('login'))
+    return render_template('homepage/index.html')
+@app.route('/features')
+def features():
+    return render_template('homepage/features.html')
+@app.route('/contact')
+def contact():
+    return render_template('homepage/contact.html')
+@app.route('/subscribe')
+def subscribe():
+    return render_template('homepage/subscribe.html')
+
+@app.route('/search-catalogue', methods=['GET', 'POST'])
+def search_catalogue_page():
+    search_query = request.form['search_query']
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT c.catalogue_id, c.category_no, c.cost, c.title, c.catalogue_type, a.name AS author_name, p.name AS publisher_name, c.purchase_date, c.subscription_end, c.count FROM catalogue c JOIN author a ON c.author_id = a.author_id JOIN publisher p ON c.publisher_id = p.publisher_id WHERE c.title LIKE %s", ("%" + search_query + "%",))
+    results = cur.fetchall()
+    cur.close()
+    catalogue_list = []
+    for row in results:
+        catalogue = {
+            'catalogue_id': row[0],
+            'category_no': row[1],
+            'cost': row[2],
+            'title': row[3],
+            'catalogue_type': row[4],
+            'author_name': row[5],
+            'publisher_name': row[6],
+            'purchase_date': row[7],
+            'subscription_end': row[8],
+            'count': row[9]
+        }
+        catalogue_list.append(catalogue)
+    return render_template('homepage/search-catalogue-page.html', results=catalogue_list, search_query=search_query)
+
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -181,7 +216,7 @@ def rooms(username):
         return render_template('room_book.html')
     abort(403)  # forbidden
 
-
+  
 # Anmol Kumar
 # Code to get all catalouge data
 @app.route('/catalogues', methods=['GET'])
@@ -620,7 +655,7 @@ def get_room_availability():
     
 @app.route('/about', methods=['GET','POST'])
 def about():
-    return render_template('about.html')
+    return render_template('homepage/about.html')
 
 @app.route('/LMS', methods=['GET','POST'])
 def LMS():

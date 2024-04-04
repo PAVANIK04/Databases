@@ -12,18 +12,20 @@
   <meta name="description" content="" />
   <meta name="author" content="" />
 
-  <title>IITGN Library</title>
+  <title>{{self._TemplateReference__context.name}}</title>
 
   <!-- bootstrap core css -->
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
 
   <!-- fonts style -->
   <link href="https://fonts.googleapis.com/css?family=Poppins:400,700|Raleway:400,700&display=swap" rel="stylesheet">
   <!-- Custom styles for this template -->
-  <link href="css/style.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
   <!-- responsive style -->
-  <link href="css/responsive.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 </head>
+
 
 <body class="sub_page">
   <div class="hero_area">
@@ -38,10 +40,10 @@
             <ul class="navbar-nav justify-content-between ">
               <div class="User_option">
                 <li class="">
-                  <a class="mr-4" href="">
+                  <a class="mr-4" href="{{ url_for('login' ) }}">
                     Login
                   </a>
-                  <a class="" href="">
+                  <a class="" href="{{ url_for('login' ) }}">
                     Sign up
                   </a>
                 </li>
@@ -63,11 +65,11 @@
             </div>
             <div id="myNav" class="overlay">
               <div class="overlay-content">
-                <a href="index.html">HOME</a>
-                <a href="about.html">ABOUT</a>
-                <a href="house.html">FEATURES</a> 
-                <a href="price.html">SUBSCRIPTION</a>
-                <a href="contact.html">CONTACT US</a>
+                <a href="/">HOME</a>
+                <a href="/about">ABOUT</a>
+                <a href="/features">FEATURES</a>
+                <a href="/subscribe">SUBSCRIPTION</a>
+                <a href="/contact">CONTACT US</a>
               </div>
             </div>
           </div>
@@ -77,8 +79,7 @@
     <!-- end header section -->
   </div>
 
-
-  <!-- price section -->
+  <br><br><br>
 
   <section class="price_section layout_padding-bottom">
     <div class="container">
@@ -110,16 +111,19 @@
                   In this you get access
                 </li>
                 <li>
-                to graduate,  UG,PG 
+                  to graduate, UG,PG
                 </li>
                 <li>
                   and Research programs.
                 </li>
                 <li>
-                  On request submitted in 
+                  On request submitted in
                 </li>
                 <li>
                   a prescribed application form.
+                </li>
+                <li>
+                  &nbsp;
                 </li>
               </ul>
             </div>
@@ -146,7 +150,7 @@
               </h2>
               <ul>
                 <li>
-                  This is a 
+                  This is a
                 </li>
                 <li>
                   membership extended to
@@ -158,7 +162,7 @@
                   organizations in public
                 </li>
                 <li>
-                 and private sector 
+                  and private sector
                 </li>
                 <li>
                   through form.
@@ -197,7 +201,7 @@
                   Academics, Researchers & Students,
                 </li>
                 <li>
-                  affiliated with academic 
+                  affiliated with academic
                 </li>
                 <li>
                   and public funded
@@ -219,7 +223,6 @@
   </section>
   <!-- end price section -->
 
-  <!-- info section -->
   <section class="info_section ">
     <div class="container">
       <div class="row">
@@ -230,7 +233,7 @@
             </h5>
             <div>
               <div class="img-box">
-                <img src="images/location.png" width="18px" alt="">
+                <img src="{{ url_for('static', filename='images/location.png') }}" width="18px" alt="">
               </div>
               <p>
                 Block 13, Academic Area, IIT Gandhinagar, Palaj, Gujarat 382055
@@ -238,7 +241,7 @@
             </div>
             <div>
               <div class="img-box">
-                <img src="images/phone.png" width="12px" alt="">
+                <img src="{{ url_for('static', filename='images/phone.png') }}" width="12px" alt="">
               </div>
               <p>
                 <li>079 2395 2431</li>
@@ -247,7 +250,7 @@
             </div>
             <div>
               <div class="img-box">
-                <img src="images/mail.png" width="18px" alt="">
+                <img src="{{ url_for('static', filename='images/mail.png') }}" width="18px" alt="">
               </div>
               <p>
                 libraryservices@iitgn.ac.in
@@ -266,7 +269,7 @@
             </p>
           </div>
         </div>
-      
+
         <div class="col-md-4">
           <div class="info_form ">
             <h5>
@@ -280,16 +283,16 @@
             </form>
             <div class="social_box">
               <a href="https://www.facebook.com/iitgn.official/">
-                <img src="images/fb.png" alt="">
+                <img src="{{ url_for('static', filename='images/fb.png') }}" alt="">
               </a>
               <a href="https://x.com/iitgn?t=JYeKmHSoJOT6fr14Qa41Pw&s=08">
-                <img src="images/twitter.png" alt="">
+                <img src="{{ url_for('static', filename='images/twitter.png') }}" alt="">
               </a>
               <a href="https://www.linkedin.com/school/indian-institute-of-technology-gandhinagar-iitgn-/">
-                <img src="images/linkedin.png" alt="">
+                <img src="{{ url_for('static', filename='images/linkedin.png') }}" alt="">
               </a>
               <a href="https://www.youtube.com/@IITGNOfficial">
-                <img src="images/youtube.png" alt="">
+                <img src="{{ url_for('static', filename='images/youtube.png') }}" alt="">
               </a>
             </div>
           </div>
@@ -312,10 +315,10 @@
   </section>
   <!-- end  footer section -->
 
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
 
-  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
-  <script type="text/javascript" src="js/bootstrap.js"></script>
-  <script type="text/javascript" src="js/custom.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/custom.js') }}"></script>
 
 </body>
 </body>

@@ -2,3 +2,12 @@
     max-width: 70%;
     background-color: antiquewhite;
 }
+
+.login-bg {
+    background-image: url(./images/bg-img.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+    background-blend-mode: darken;
+}

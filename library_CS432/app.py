@@ -601,12 +601,10 @@ def delete_catalogue(catalogue_id):
     try:
         cur = mysql.connection.cursor()
 
-        # Delete from recommendation table first
         cur.execute("DELETE FROM recommendation WHERE catalogue_id = %s", (catalogue_id,))
         # Commit the deletion
         mysql.connection.commit()
 
-        # Now delete from the catalogue table
         cur.execute("DELETE FROM catalogue WHERE catalogue_id = %s", (catalogue_id,))
         # Commit the deletion
         mysql.connection.commit()
@@ -643,7 +641,6 @@ def add_member():
         first_name, last_name, phone, username, password, dues, department, member_type, subscription_fees, user_img))
         user_id = cur.lastrowid
 
-        # Insert email into the user_mail table
         cur.execute("""
             INSERT INTO user_mail (user_ID, email)
             VALUES (%s, %s)
@@ -755,14 +752,12 @@ def issue_item():
         return_date = issue_date + timedelta(days=time_period[0])
         print(return_date)
 
-        # Insert into the issue table to generate the issue_id
         cur = mysql.connection.cursor()
         cur.execute("INSERT INTO issue (issue_id, issue_date) VALUES (%s, %s)", (issue_id, issue_date))
         mysql.connection.commit()
 
 
 
-        # Insert into the issuing table
         cur.execute("INSERT INTO issueing (catalogue_id, user_ID, issue_id) VALUES (%s, %s, %s)", (catalogue_id, user_ID, issue_id))
         mysql.connection.commit()
 
@@ -786,7 +781,6 @@ def issue_item():
 def get_issued():
     username = session.get('username')
     try:
-        # Fetch the user_ID based on the username
         cur = mysql.connection.cursor()
         cur.execute("SELECT user_ID FROM user WHERE username = %s", (username,))
         user_id_row = cur.fetchone()
@@ -794,7 +788,6 @@ def get_issued():
         cur.close()
 
         if user_id_row:
-            # Fetch issued items data including catalogue name and issue date
             cur = mysql.connection.cursor()
             cur.execute("""
                 SELECT i.catalogue_id, c.title AS catalogue_name, iss.issue_date
@@ -860,10 +853,8 @@ def LMS():
 @app.route('/catalogue_report', methods=['GET'])
 def generate_catalogue_report_csv():
     try:
-        # Get cursor
         cur = mysql.connection.cursor()
 
-        # Fetch catalogue data from the database
         cur.execute("""
             SELECT c.catalogue_id, c.title, c.category_no, c.cost, c.catalogue_type, a.name AS author_name, p.name AS publisher_name, c.purchase_date, c.subscription_end, c.count 
             FROM catalogue c 
@@ -872,7 +863,6 @@ def generate_catalogue_report_csv():
         """)
         catalogue_report_data = cur.fetchall()
 
-        # Generate CSV file
         csv_filename = 'catalogue_report.csv'
         with open(csv_filename, 'w', newline='') as csvfile:
             fieldnames = ['Catalogue ID', 'Title', 'Category No', 'Cost', 'Catalogue Type', 'Author Name', 'Publisher Name', 'Purchase Date', 'Subscription End', 'Count']
@@ -893,10 +883,8 @@ def generate_catalogue_report_csv():
                     'Count': catalogue[9]
                 })
 
-        # Close cursor
         cur.close()
 
-        # Return the generated CSV file
         return send_file(csv_filename, as_attachment=True)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -904,10 +892,8 @@ def generate_catalogue_report_csv():
 @app.route('/issued_books_report', methods=['GET'])
 def generate_books_issued_report_csv():
     try:
-        # Get cursor
         cur = mysql.connection.cursor()
 
-        # Fetch books issued data from the database
         cur.execute("""
             SELECT i.catalogue_id, c.title AS catalogue_title, u.username AS issued_by, iss.issue_date AS issue_date
             FROM issueing i
@@ -917,7 +903,6 @@ def generate_books_issued_report_csv():
         """)
         books_issued_data = cur.fetchall()
 
-        # Generate CSV file
         csv_filename = 'books_issued_report.csv'
         with open(csv_filename, 'w', newline='') as csvfile:
             fieldnames = ['Catalogue ID', 'Catalogue Title', 'Issued By', 'Issue Date']
@@ -932,10 +917,8 @@ def generate_books_issued_report_csv():
                     'Issue Date': book[3]
                 })
 
-        # Close cursor
         cur.close()
 
-        # Return the generated CSV file
         return send_file(csv_filename, as_attachment=True)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

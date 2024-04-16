@@ -1,7 +1,12 @@
 from flask import Flask
-from flask import render_template, request, redirect, url_for, session, abort, jsonify
+from flask import render_template, request, redirect, url_for, session, abort, jsonify, current_app, send_file
 import time, random, string
-from datetime import date
+from datetime import date, datetime, timedelta
+import bleach
+import csv
+from authlib.integrations.flask_client import OAuth
+from authlib.common.security import generate_token
+
 
 from flask_mysqldb import MySQL
 
@@ -9,6 +14,8 @@ import config
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
+oauth = OAuth(app)
+
 
 # Configure db
 app.config['MYSQL_HOST'] = config.MYSQL_HOST
@@ -20,6 +27,74 @@ mysql = MySQL(app)
 
 
 # Anmol Kumar
+
+@app.route('/google/')
+def google():
+
+    GOOGLE_CLIENT_ID = '881936870792-b6ffk3acq9rrbv5dk0ocdb4nqt0ag8kk.apps.googleusercontent.com'
+    GOOGLE_CLIENT_SECRET = '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'
+
+    CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
+    oauth.register(
+        name='google',
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+        server_metadata_url=CONF_URL,
+        client_kwargs={
+            'scope': 'openid email profile'
+        }
+    )
+
+    redirect_uri = url_for('google_auth', _external=True)
+    # print(redirect_uri)
+    session['nonce'] = generate_token()
+    return oauth.google.authorize_redirect(redirect_uri, nonce=session['nonce'])
+
+@app.route('/google/auth/')
+def google_auth():
+    token = oauth.google.authorize_access_token()
+    user = oauth.google.parse_id_token(token, nonce=session['nonce'])
+    
+    if 'email' in user and user['email'].endswith('@iitgn.ac.in'):
+        session['user'] = user
+        # print("Google User ", user)
+        email = user.get('email', '')
+        print("Email ", email)
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT user_ID FROM user_mail WHERE email=%s", (email,))
+        user_id = cur.fetchone()
+        print("Done fetcting User ID ", user_id)
+
+        if user_id:
+            user_id = user_id[0]
+            print("User ID after If", user_id)
+            cur.execute("SELECT * FROM user WHERE user_ID=%s", (user_id,))
+            userdata = cur.fetchone()
+            username= userdata[4]
+
+            session['username'] = username
+            session['role'] = userdata[8]
+            if userdata[8] == 'Admin':
+                return redirect(url_for('admin', username=username))
+            if userdata[8] == 'Staff':
+                return redirect(url_for('staff', username=username))
+            if userdata[8] == 'InterLibrary':
+                return redirect(url_for('external', username=username))
+            if userdata[8] == 'Student':
+                return redirect(url_for('home', username=username))
+            if userdata[8] == 'Faculty':
+                return redirect(url_for('faculty', username=username))
+
+
+
+        return redirect('/')
+    else:
+        return "Unauthorized access. Only users iitgn.ac.in are allowed to login."
+    
+
+
+
+
 @app.route('/')
 def index():
     return render_template('homepage/index.html')
@@ -71,9 +146,57 @@ def search_catalogue_page():
 
 
 # Aashmun Gupta
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if request.method == 'POST':
+#         username = request.form['username']
+#         password = request.form['password']
+#         error = None
+#         cur = mysql.connection.cursor()
+#         cur.execute(
+#             'SELECT * FROM user WHERE username = %s AND password = %s', (username, password)
+#         )
+#         users = cur.fetchone()
+#         if users is None:
+#             error = 'Incorrect username / password !'
+#         if error is None:
+#             session['username'] = username
+#             session['role'] = users[8]
+#             if users[8] == 'Admin':
+#                 return redirect(url_for('admin', username=username))
+#             if users[8] == 'Staff':
+#                 return redirect(url_for('staff', username=username))
+#             if users[8] == 'InterLibrary':
+#                 return redirect(url_for('external', username=username))
+#             if users[8] == 'Student':
+#                 return redirect(url_for('home', username=username))
+#             if users[8] == 'Faculty':
+#                 return redirect(url_for('faculty', username=username))
+#         cur.close()
+
+#     return render_template('login.html')
+
+login_attempts = {}
+MAX_LOGIN_ATTEMPTS = 5
+LOGIN_WINDOW_SECONDS = 60
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+  
     if request.method == 'POST':
+        ip_address = request.remote_addr
+        print(ip_address)
+        if ip_address in login_attempts:
+            print("IP address found in login attempts")
+            attempts, last_attempt_time = login_attempts[ip_address]
+            if datetime.now() - last_attempt_time < timedelta(seconds=LOGIN_WINDOW_SECONDS):
+                if attempts >= MAX_LOGIN_ATTEMPTS:
+                    print("Too many login attempts")
+                    return "<h1>Too many login attempts. Please try again later.</h1>"
+            else:
+                login_attempts.pop(ip_address)
+
+        # Attempt login
         username = request.form['username']
         password = request.form['password']
         error = None
@@ -81,23 +204,31 @@ def login():
         cur.execute(
             'SELECT * FROM user WHERE username = %s AND password = %s', (username, password)
         )
-        users = cur.fetchone()
-        if users is None:
+        user = cur.fetchone()
+        if user is None:
             error = 'Incorrect username / password !'
         if error is None:
             session['username'] = username
-            session['role'] = users[8]
-            if users[8] == 'Admin':
+            session['role'] = user[8]
+            if user[8] == 'Admin':
                 return redirect(url_for('admin', username=username))
-            if users[8] == 'Staff':
+            if user[8] == 'Staff':
                 return redirect(url_for('staff', username=username))
-            if users[8] == 'InterLibrary':
+            if user[8] == 'InterLibrary':
                 return redirect(url_for('external', username=username))
-            if users[8] == 'Student':
+            if user[8] == 'Student':
                 return redirect(url_for('home', username=username))
-            if users[8] == 'Faculty':
+            if user[8] == 'Faculty':
                 return redirect(url_for('faculty', username=username))
         cur.close()
+        
+        if ip_address in login_attempts:
+            attempts, _ = login_attempts[ip_address]
+            login_attempts[ip_address] = (attempts + 1, datetime.now())
+            print(login_attempts)
+        else:
+            login_attempts[ip_address] = (1, datetime.now())
+
     return render_template('login.html')
 
 
@@ -309,21 +440,30 @@ def search_catalogue():
         return jsonify({'error': str(e)}), 500
 
 
-# Route to create a category
 @app.route('/add_category', methods=['POST'])
 def create_category():
     try:
         category_no = request.form['category_no']
         category_name = request.form['category_name']
         column_no = request.form['column_no']
+        time_period = request.form['time_period']
         status = request.form['status']
 
+        # Insert into shelf table
         cur = mysql.connection.cursor()
         cur.execute("""
             INSERT INTO shelf (category_no, category_name, column_no, status)
             VALUES (%s, %s, %s, %s)
         """, (category_no, category_name, column_no, status))
         mysql.connection.commit()
+
+        # Insert into policy table
+        cur.execute("""
+            INSERT INTO policy (policy_id, category, time_period)
+            VALUES (%s, %s, %s)
+        """, (category_no, category_name, time_period))
+        mysql.connection.commit()
+
         cur.close()
 
         return jsonify({'success': True, 'message': 'Category created successfully'})
@@ -333,15 +473,15 @@ def create_category():
 
 @app.route('/add_catalogue', methods=['POST'])
 def add_catalogue():
-    title = request.form['title']
-    author_name = request.form['authorName']
-    publisher_name = request.form['publisherName']
-    category_no = request.form['categoryNo']
-    cost = request.form['cost']
-    catalogue_type = request.form['catalogueType']
-    purchase_date = request.form['purchaseDate']
-    subscription_end = request.form['subscriptionEnd']
-    count = request.form['count']
+    title = bleach.clean(request.form['title']) 
+    author_name = bleach.clean(request.form['authorName'])
+    publisher_name = bleach.clean(request.form['publisherName'])
+    category_no = bleach.clean(request.form['categoryNo'])
+    cost = bleach.clean(request.form['cost'])
+    catalogue_type = bleach.clean(request.form['catalogueType'])
+    purchase_date = bleach.clean(request.form['purchaseDate'])
+    subscription_end = bleach.clean(request.form['subscriptionEnd'])
+    count = bleach.clean(request.form['count'])
 
     try:
         # Insert author first
@@ -389,16 +529,17 @@ def rename():
 
 @app.route('/rename-table', methods=['POST'])
 def rename_table():
-    # Connect to your SQLite database
+    new_table_name = request.json['table_name']
+    if not new_table_name:
+        return 'Table name cannot be empty', 400
+
     cur = mysql.connection.cursor()
 
-    # Execute the SQL query to rename the table
     try:
-        cur.execute("ALTER TABLE recommendations RENAME TO course_reading;")
-        cur.commit()
+        cur.execute(f"ALTER TABLE rooms RENAME TO {new_table_name}")
+        mysql.connection.commit()
         return 'Table renamed successfully!', 200
     except Exception as e:
-        cur.rollback()
         return f'Error renaming table: {str(e)}', 500
     finally:
         cur.close()
@@ -406,20 +547,21 @@ def rename_table():
 # to update catalogue    
 @app.route('/update_catalogue', methods=['POST'])
 def update_catalogue():
-    catalogue_id = request.form['catalogueId']
-    title = request.form['title']
-    author_name = request.form['authorName']
-    publisher_name = request.form['publisherName']
-    category_no = request.form['categoryNo']
-    cost = request.form['cost']
-    catalogue_type = request.form['catalogueType']
-    purchase_date = request.form['purchaseDate']
-    subscription_end = request.form['subscriptionEnd']
-    count = request.form['count']
+    catalogue_id = bleach.clean(request.form['catalogueId'])
+    title = bleach.clean(request.form['title'])
+    author_name = bleach.clean(request.form['authorName'])
+    publisher_name = bleach.clean(request.form['publisherName'])
+    category_no = bleach.clean(request.form['categoryNo'])
+    cost = bleach.clean(request.form['cost'])
+    catalogue_type = bleach.clean(request.form['catalogueType'])
+    purchase_date = bleach.clean(request.form['purchaseDate'])
+    subscription_end = bleach.clean(request.form['subscriptionEnd'])
+    count = bleach.clean(request.form['count'])
 
     try:
         # Update author
         cur = mysql.connection.cursor()
+        
         cur.execute("SELECT author_id FROM author WHERE name = %s", (author_name,))
         author_id = cur.fetchone()
         if author_id is None:
@@ -440,9 +582,12 @@ def update_catalogue():
             publisher_id = publisher_id[0]
 
         # Update catalogue
+        cur.execute("LOCK TABLES catalogue WRITE")
         cur.execute("UPDATE catalogue SET title = %s, author_id = %s, publisher_id = %s, category_no = %s, cost = %s, catalogue_type = %s, purchase_date = %s, subscription_end = %s, count = %s WHERE catalogue_id = %s",
                     (title, author_id, publisher_id, category_no, cost, catalogue_type, purchase_date, subscription_end, count, catalogue_id,))
         mysql.connection.commit()
+        cur.execute("UNLOCK TABLES")
+        
         cur.close()
         return jsonify({'success': True, 'message': 'Catalogue updated successfully'})
     except Exception as e:
@@ -585,22 +730,49 @@ def get_current_date():
 def issue_item():
     try:
         catalogue_id = request.form['catalogue_id']
+
+
         username = session.get('username')
         cur = mysql.connection.cursor()
+
         cur.execute("SELECT user_ID FROM user WHERE username = %s", (username,))
         user_ID = cur.fetchone()
+
+        cur.execute("""
+            SELECT category_no
+            FROM catalogue
+            WHERE catalogue_id = %s
+        """, (catalogue_id,))
+        category_id = cur.fetchone()
         
         # Generate unique issue_id and current date
         issue_id = generate_issue_id()
         issue_date = get_current_date()
+
+        cur.execute("SELECT time_period FROM policy WHERE policy_id = %s", (category_id,))
+        time_period = cur.fetchone()
+        print(time_period)
+        return_date = issue_date + timedelta(days=time_period[0])
+        print(return_date)
 
         # Insert into the issue table to generate the issue_id
         cur = mysql.connection.cursor()
         cur.execute("INSERT INTO issue (issue_id, issue_date) VALUES (%s, %s)", (issue_id, issue_date))
         mysql.connection.commit()
 
+
+
         # Insert into the issuing table
         cur.execute("INSERT INTO issueing (catalogue_id, user_ID, issue_id) VALUES (%s, %s, %s)", (catalogue_id, user_ID, issue_id))
+        mysql.connection.commit()
+
+
+
+        cur.execute("INSERT INTO lending (catalogue_id, policy_id) VALUES (%s, %s)", (catalogue_id, category_id))
+        mysql.connection.commit()
+
+
+        cur.execute("INSERT INTO returnn (issue_id, return_date, remarks) VALUES (%s, %s, %s)", (issue_id, return_date, 'Due'))
         mysql.connection.commit()
         cur.close()
 
@@ -677,10 +849,96 @@ def get_room_availability():
 def about():
     return render_template('homepage/about.html')
 
+@app.route('/reports')
+def catalogue():
+    return render_template('admin/reports.html')
 
 @app.route('/LMS')
 def LMS():
     return render_template('LMS.html')
+
+@app.route('/catalogue_report', methods=['GET'])
+def generate_catalogue_report_csv():
+    try:
+        # Get cursor
+        cur = mysql.connection.cursor()
+
+        # Fetch catalogue data from the database
+        cur.execute("""
+            SELECT c.catalogue_id, c.title, c.category_no, c.cost, c.catalogue_type, a.name AS author_name, p.name AS publisher_name, c.purchase_date, c.subscription_end, c.count 
+            FROM catalogue c 
+            JOIN author a ON c.author_id = a.author_id 
+            JOIN publisher p ON c.publisher_id = p.publisher_id
+        """)
+        catalogue_report_data = cur.fetchall()
+
+        # Generate CSV file
+        csv_filename = 'catalogue_report.csv'
+        with open(csv_filename, 'w', newline='') as csvfile:
+            fieldnames = ['Catalogue ID', 'Title', 'Category No', 'Cost', 'Catalogue Type', 'Author Name', 'Publisher Name', 'Purchase Date', 'Subscription End', 'Count']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            
+            writer.writeheader()
+            for catalogue in catalogue_report_data:
+                writer.writerow({
+                    'Catalogue ID': catalogue[0],
+                    'Title': catalogue[1],
+                    'Category No': catalogue[2],
+                    'Cost': catalogue[3],
+                    'Catalogue Type': catalogue[4],
+                    'Author Name': catalogue[5],
+                    'Publisher Name': catalogue[6],
+                    'Purchase Date': catalogue[7],
+                    'Subscription End': catalogue[8],
+                    'Count': catalogue[9]
+                })
+
+        # Close cursor
+        cur.close()
+
+        # Return the generated CSV file
+        return send_file(csv_filename, as_attachment=True)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/issued_books_report', methods=['GET'])
+def generate_books_issued_report_csv():
+    try:
+        # Get cursor
+        cur = mysql.connection.cursor()
+
+        # Fetch books issued data from the database
+        cur.execute("""
+            SELECT i.catalogue_id, c.title AS catalogue_title, u.username AS issued_by, iss.issue_date AS issue_date
+            FROM issueing i
+            JOIN user u ON i.user_ID = u.user_ID
+            JOIN issue iss ON i.issue_id = iss.issue_id
+            JOIN catalogue c ON i.catalogue_id = c.catalogue_id
+        """)
+        books_issued_data = cur.fetchall()
+
+        # Generate CSV file
+        csv_filename = 'books_issued_report.csv'
+        with open(csv_filename, 'w', newline='') as csvfile:
+            fieldnames = ['Catalogue ID', 'Catalogue Title', 'Issued By', 'Issue Date']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            
+            writer.writeheader()
+            for book in books_issued_data:
+                writer.writerow({
+                    'Catalogue ID': book[0],
+                    'Catalogue Title': book[1],
+                    'Issued By': book[2],
+                    'Issue Date': book[3]
+                })
+
+        # Close cursor
+        cur.close()
+
+        # Return the generated CSV file
+        return send_file(csv_filename, as_attachment=True)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':

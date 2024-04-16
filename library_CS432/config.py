@@ -1,6 +1,6 @@
 MYSQL_HOST = 'localhost'
 MYSQL_USER = 'root'
-MYSQL_PASSWORD = ''
+MYSQL_PASSWORD = '1111'
 MYSQL_DB = 'library'
 
-SECRET_KEY = ''
+SECRET_KEY = '12345'

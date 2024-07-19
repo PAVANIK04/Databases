@@ -87,41 +87,24 @@
     </nav>
 
     <div class="container mt-4">
+        <h2 class="mb-4">Report Generation</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <a class="btn btn-primary btn-block" href="/catalogue_report">Generate Catalogue Report</a>
+            </div>
+            <div class="col-md-6">
+                <a class="btn btn-primary btn-block" href="/issued_books_report">Generate Books Issued Report</a>
+            </div>
+            <!-- Add more buttons for other types of reports if needed -->
+        </div>
 
-        <h3>Table Name: {{table_name}}</h3>
-        <button type="button" class="btn btn-primary" data-mdb-ripple-init id="renameButton">Rename Table</button>
-
-        <script>
-            document.getElementById("renameButton").addEventListener("click", function () {
-                new_name = "room";
-
-                fetch('/rename-table', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        table_name: new_name,
-                    })
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            alert("Table renamed successfully!");
-                        } else {
-                            alert("Error renaming table.");
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert("Error renaming table.");
-                    });
-            });
-        </script>
     </div>
 
 
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>
+
+      
 </body>
 
 </html>

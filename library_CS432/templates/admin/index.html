@@ -101,16 +101,20 @@
             <div class="col-md-12">
                 <button type="button" class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init
                     data-mdb-target="#add_cat">
-                    Add Catalogue
+                    <i class="fa fa-plus"></i> &nbsp; Add Catalogue
                 </button>
                 <button type="button" class="btn btn-success" data-mdb-ripple-init data-mdb-modal-init
                     data-mdb-target="#add_mem">
-                    Add Member
+                    <i class="fa fa-user"></i> &nbsp; Add Member
                 </button>
                 <button type="button" class="btn btn-info" data-mdb-ripple-init data-mdb-modal-init
                     data-mdb-target="#addCategoryModal">
-                    Add Category
+                    <i class="fa fa-book"></i> &nbsp; Add Category
                 </button>
+
+                <a class="btn btn-primary" href="/reports">
+                    <i class="fa fa-file-excel"></i> &nbsp; Generate Reports
+                </a>
 
 
             </div>
@@ -359,10 +363,14 @@
                             <input type="text" class="form-control" id="columnNo" name="column_no" required>
                         </div>
                         <div class="mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <input type="text" class="form-control" id="status" name="status" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add</button>
+                            <label for="time_period" class="form-label">time_period</label>
+                            <input type="text" class="form-control" id="time_period" name="time_period" required>
+
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <input type="text" class="form-control" id="status" name="status" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add</button>
                     </form>
                 </div>
             </div>
@@ -394,7 +402,6 @@
                 tableHeader.append(headerRow);
                 table.append(tableHeader);
 
-                // Create table body
                 var tableBody = $('<tbody></tbody>');
                 data.forEach(function (catalogue) {
                     var row = $('<tr></tr>');
@@ -535,10 +542,10 @@
             var formData = $(this).serialize();
 
             $.post('/add_category', formData, function (response) {
-                $('#addCategoryModal').modal('close');
+
                 window.location.reload();
                 if (response.success) {
-                    alert('Member added successfully!');
+                    alert('Category added successfully!');
                 } else {
                     alert('Error: ' + response.message);
                 }
